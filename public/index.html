@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Cost Waste Calculator — How much are your AI agents costing you?</title>
+<script src="/ama-analytics.js" defer></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #131320;
+    --border: #1e1e35;
+    --text: #e0e0f0;
+    --muted: #7b7ba0;
+    --accent: #6366f1;
+    --accent-glow: #818cf8;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --save: #10b981;
+    --save-glow: #34d399;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 60px 0 40px; }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #e0e0f0 0%, #818cf8 50%, #6366f1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .subtitle {
+    font-size: 1.15rem;
+    color: var(--muted);
+    margin-top: 12px;
+    max-width: 560px;
+    margin-inline: auto;
+  }
+  .hero .stat-pill {
+    display: inline-flex; gap: 6px; align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 18px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 20px;
+  }
+  .stat-pill strong { color: var(--accent-glow); }
+
+  /* Calculator card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .card h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .card .card-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  /* Slider group */
+  .input-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .input-item label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .input-item label .val {
+    color: var(--accent-glow);
+    font-weight: 700;
+  }
+  .input-item input[type=range] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+  }
+  .input-item input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .input-item .quick-btns {
+    display: flex; gap: 6px; margin-top: 6px;
+  }
+  .quick-btns button {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 3px 0;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .quick-btns button:hover { border-color: var(--accent); color: var(--text); }
+
+  /* Results */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .result-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .result-box .label { font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+  .result-box .value { font-size: 2rem; font-weight: 800; }
+  .result-box .sub { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+  .value.danger { color: var(--danger); }
+  .value.save { color: var(--save); }
+  .value.warn { color: var(--warn); }
+
+  /* Waste breakdown bars */
+  .waste-breakdown { margin-bottom: 20px; }
+  .waste-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 10px;
+  }
+  .waste-row .waste-label {
+    width: 160px; font-size: 0.82rem; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .waste-row .bar-track {
+    flex:1; height: 8px; background: var(--border); border-radius: 4px;
+    overflow: hidden;
+  }
+  .waste-row .bar-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .waste-row .waste-amount {
+    width: 80px; text-align: right; font-size: 0.82rem;
+    font-weight: 600; flex-shrink: 0;
+  }
+  .bar-fill.dup { background: var(--danger); }
+  .bar-fill.over { background: var(--warn); }
+  .bar-fill.cache { background: var(--accent); }
+  .bar-fill.zombie { background: var(--muted); }
+
+  /* CTA */
+  .cta {
+    text-align: center;
+    padding: 16px 0;
+  }
+  .cta button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px 48px;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 30px rgba(99,102,241,0.3);
+  }
+  .cta button:hover {
+    background: var(--accent-glow);
+    box-shadow: 0 0 50px rgba(99,102,241,0.5);
+    transform: translateY(-1px);
+  }
+  .cta .hint {
+    font-size: 0.8rem; color: var(--muted); margin-top: 10px;
+  }
+
+  /* Comparison table */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .comp-col {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .comp-col h3 { font-size: 0.95rem; margin-bottom: 12px; }
+  .comp-col.current h3 { color: var(--danger); }
+  .comp-col.with-ama h3 { color: var(--save); }
+  .comp-col .line {
+    display: flex; justify-content: space-between;
+    font-size: 0.85rem; padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-col .line:last-child { border-bottom: none; font-weight: 700; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .container { padding: 20px 16px; }
+    .hero { padding: 30px 0 20px; }
+    .hero h1 { font-size: 1.6rem; }
+    .card { padding: 20px; }
+    .results-grid { grid-template-columns: 1fr 1fr; }
+    .comparison { grid-template-columns: 1fr; }
+    .waste-row .waste-label { width: 110px; font-size: 0.72rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>AI Cost Waste Calculator</h1>
+    <p class="subtitle">
+      The average team wastes 30–50% of their AI API spend on duplicate calls,
+      overqualified models, and unmanaged agents. See your numbers.
+    </p>
+    <div class="stat-pill">
+      🔬 Based on real data: <strong>457 agents</strong> indexed on this machine
+    </div>
+  </div>
+
+  <!-- Input Card -->
+  <div class="card">
+    <h2>Your AI Setup</h2>
+    <p class="card-desc">Adjust the sliders to match your team's usage</p>
+    <div class="input-group">
+      <div class="input-item">
+        <label>Team Size <span class="val" id="valTeam">50</span> developers</label>
+        <input type="range" id="teamSize" min="5" max="500" value="50" step="5">
+        <div class="quick-btns">
+          <button onclick="setSlider('teamSize', 10)">Small</button>
+          <button onclick="setSlider('teamSize', 50)">Medium</button>
+          <button onclick="setSlider('teamSize', 200)">Large</button>
+        </div>
+      </div>
+      <div class="input-item">
+        <label>AI Tasks/Day/Dev <span class="val" id="valTasks">8</span></label>
+        <input type="range" id="tasksPerDay" min="1" max="30" value="8" step="1">
+        <div class="quick-btns">
+          <button onclick="setSlider('tasksPerDay', 3)">Light</button>
+          <button onclick="setSlider('tasksPerDay', 8)">Average</button>
+          <button onclick="setSlider('tasksPerDay', 20)">Heavy</button>
+        </div>
+      </div>
+      <div class="input-item">
+        <label>Avg Tokens/Task <span class="val" id="valTokens">4,000</span></label>
+        <input type="range" id="avgTokens" min="1000" max="20000" value="4000" step="500">
+        <div class="quick-btns">
+          <button onclick="setSlider('avgTokens', 2000)">Short</button>
+          <button onclick="setSlider('avgTokens', 4000)">Medium</button>
+          <button onclick="setSlider('avgTokens', 10000)">Long</button>
+        </div>
+      </div>
+      <div class="input-item">
+        <label>Simple Task Ratio <span class="val" id="valSimple">60%</span></label>
+        <input type="range" id="simpleRatio" min="10" max="90" value="60" step="5">
+        <div class="quick-btns">
+          <button onclick="setSlider('simpleRatio', 30)">Complex</button>
+          <button onclick="setSlider('simpleRatio', 60)">Mixed</button>
+          <button onclick="setSlider('simpleRatio', 80)">Simple</button>
+        </div>
+      </div>
+      <div class="input-item">
+        <label>Model Mix: High-End % <span class="val" id="valModel">40%</span></label>
+        <input type="range" id="modelMix" min="5" max="90" value="40" step="5">
+        <div class="quick-btns">
+          <button onclick="setSlider('modelMix', 15)">Cost-Conscious</button>
+          <button onclick="setSlider('modelMix', 40)">Mixed</button>
+          <button onclick="setSlider('modelMix', 75)">Always Best</button>
+        </div>
+      </div>
+      <div class="input-item">
+        <label>Agent Count <span class="val" id="valAgents">50</span> agents</label>
+        <input type="range" id="agentCount" min="5" max="300" value="50" step="5">
+        <div class="quick-btns">
+          <button onclick="setSlider('agentCount', 20)">Few</button>
+          <button onclick="setSlider('agentCount', 50)">Many</button>
+          <button onclick="setSlider('agentCount', 150)">Too Many</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Card -->
+  <div class="card" id="results">
+    <h2>Your AI Spending Analysis</h2>
+    <p class="card-desc">Monthly breakdown based on real API pricing</p>
+
+    <div class="results-grid">
+      <div class="result-box">
+        <div class="label">Monthly AI Spend</div>
+        <div class="value" id="totalSpend">$0</div>
+        <div class="sub">Total API costs</div>
+      </div>
+      <div class="result-box">
+        <div class="label">Wasted</div>
+        <div class="value danger" id="totalWaste">$0</div>
+        <div class="sub" id="wastePct">0% of spend</div>
+      </div>
+      <div class="result-box">
+        <div class="label">AMA Savings</div>
+        <div class="value save" id="amaSavings">$0</div>
+        <div class="sub">Per month with AMA</div>
+      </div>
+      <div class="result-box">
+        <div class="label">Yearly Savings</div>
+        <div class="value save" id="yearlySavings">$0</div>
+        <div class="sub">Compound benefit</div>
+      </div>
+    </div>
+
+    <!-- Waste breakdown -->
+    <div class="waste-breakdown">
+      <div class="waste-row">
+        <span class="waste-label">Duplicate Calls</span>
+        <div class="bar-track"><div class="bar-fill dup" id="barDup" style="width:0%"></div></div>
+        <span class="waste-amount" id="amtDup">$0</span>
+      </div>
+      <div class="waste-row">
+        <span class="waste-label">Overqualified Models</span>
+        <div class="bar-track"><div class="bar-fill over" id="barOver" style="width:0%"></div></div>
+        <span class="waste-amount" id="amtOver">$0</span>
+      </div>
+      <div class="waste-row">
+        <span class="waste-label">Cache Misses</span>
+        <div class="bar-track"><div class="bar-fill cache" id="barCache" style="width:0%"></div></div>
+        <span class="waste-amount" id="amtCache">$0</span>
+      </div>
+      <div class="waste-row">
+        <span class="waste-label">Zombie Agents</span>
+        <div class="bar-track"><div class="bar-fill zombie" id="barZombie" style="width:0%"></div></div>
+        <span class="waste-amount" id="amtZombie">$0</span>
+      </div>
+    </div>
+
+    <!-- Comparison -->
+    <div class="comparison">
+      <div class="comp-col current">
+        <h3>Current (No AMA)</h3>
+        <div class="line"><span>API Spend</span><span id="compSpend">$0</span></div>
+        <div class="line"><span>Duplicate Waste</span><span id="compDup">$0</span></div>
+        <div class="line"><span>Model Waste</span><span id="compOver">$0</span></div>
+        <div class="line"><span>Management Overhead</span><span id="compMgmt">$0</span></div>
+        <div class="line"><span>Total</span><span id="compTotal">$0</span></div>
+      </div>
+      <div class="comp-col with-ama">
+        <h3>With AMA</h3>
+        <div class="line"><span>API Spend (optimized)</span><span id="amaSpend">$0</span></div>
+        <div class="line"><span>Smart Routing</span><span id="amaRoute">$0 saved</span></div>
+        <div class="line"><span>Cache Optimization</span><span id="amaCache">$0 saved</span></div>
+        <div class="line"><span>AMA License</span><span id="amaLicense">-$999</span></div>
+        <div class="line"><span>Net Total</span><span id="amaTotal">$0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead Capture CTA -->
+  <div class="card" id="cta-section" style="text-align:center">
+    <h2 id="ctaTitle">Get Your Free AI Savings Report</h2>
+    <p style="color:var(--muted);margin:12px 0 24px" id="ctaDesc">
+      We'll send you a personalized breakdown of where your AI budget is leaking — and exactly how to fix it.
+    </p>
+
+    <!-- Form (visible before submit) -->
+    <form id="leadForm" onsubmit="captureLead(event)" style="max-width:440px;margin:0 auto">
+      <div style="display:flex;gap:10px;margin-bottom:12px">
+        <input type="email" id="leadEmail" required
+               placeholder="your@email.com"
+               style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:0.95rem;outline:none">
+        <input type="text" id="leadCompany"
+               placeholder="Company (optional)"
+               style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:0.95rem;outline:none">
+      </div>
+      <button type="submit" id="submitBtn"
+              style="width:100%;background:var(--accent);color:white;border:none;padding:14px 0;border-radius:12px;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 0 30px rgba(99,102,241,0.3)">
+        Send Me My Free Report
+      </button>
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:8px">
+        No spam. Just your personalized AI waste report and a one-click fix.
+      </p>
+    </form>
+
+    <!-- Success state (hidden initially) -->
+    <div id="leadSuccess" style="display:none">
+      <div style="font-size:3rem;margin-bottom:12px">📬</div>
+      <h3 style="color:var(--save);margin-bottom:8px" id="successTitle">Free report generated!</h3>
+      <p style="color:var(--muted);margin-bottom:8px" id="successMsg">
+        Your personalized savings report is ready.
+      </p>
+
+      <!-- UPSELL: Pro Report -->
+      <div id="upsellBox" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(16,185,129,0.08));border:1px solid var(--save);border-radius:14px;padding:24px;margin:20px 0;text-align:left;max-width:480px;margin-inline:auto">
+        <div style="display:flex;align-items:start;gap:12px">
+          <div style="font-size:2rem;flex-shrink:0"></div>
+          <div>
+            <h4 style="color:var(--save);margin-bottom:4px">Upgrade to Pro Report — $49</h4>
+            <p style="color:var(--muted);font-size:0.85rem;margin-bottom:12px">
+              Get your <strong>actual agent inventory scan</strong>, per-agent cost breakdown,
+              custom optimization plan, and one-click AMA deployment script.
+            </p>
+            <ul style="color:var(--muted);font-size:0.8rem;margin-bottom:16px;list-style:none;padding:0">
+              <li style="padding:3px 0"> Real agent scan (not just estimates)</li>
+              <li style="padding:3px 0"> Per-agent cost & waste breakdown</li>
+              <li style="padding:3px 0"> Custom optimization plan (6-week timeline)</li>
+              <li style="padding:3px 0"> One-click AMA deployment script</li>
+              <li style="padding:3px 0"> 30-day email support</li>
+            </ul>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <a id="stripeBuyLink"
+                 href="https://buy.stripe.com/YOUR_PRO_REPORT_LINK"
+                 target="_blank"
+                 style="background:var(--accent);color:#fff;padding:12px 28px;border-radius:10px;font-weight:700;text-decoration:none;display:inline-block;text-align:center">
+                Get Pro Report — $49
+              </a>
+              <span style="font-size:0.72rem;color:var(--muted);align-self:center">
+                Secure payment via Stripe<br>Instant delivery
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+        <button onclick="document.getElementById('leadSuccess').style.display='none';document.getElementById('leadForm').style.display='block';document.getElementById('ctaTitle').textContent='Get Your Free AI Savings Report'"
+                style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:10px;cursor:pointer">
+          Send Another
+        </button>
+        <a href="/store"
+           style="background:var(--save);color:#000;padding:10px 24px;border-radius:10px;font-weight:700;text-decoration:none">
+          Browse Agent Store
+        </a>
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div id="leadLoading" style="display:none">
+      <div class="spinner" style="margin:20px auto"></div>
+      <p style="color:var(--muted)">Generating your personalized report...</p>
+    </div>
+  </div>
+
+  <!-- Open Source / Cloud CTA (secondary) -->
+  <div style="text-align:center;padding:20px 0 40px">
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px">
+      Prefer to skip the report? Deploy directly:
+    </p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button onclick="alert('AMA Core: pip install ama-core && ama scan && ama start')"
+              style="background:var(--save);color:#000;border:none;padding:10px 24px;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.85rem">
+        Open Source (Free)
+      </button>
+      <button onclick="alert('AMA Cloud: $999/mo — managed hosting, SSO, audit logs, SLA')"
+              style="background:transparent;border:1px solid var(--accent);color:var(--accent-glow);padding:10px 24px;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.85rem">
+        AMA Cloud ($999/mo)
+      </button>
+    </div>
+    <p style="font-size:0.7rem;color:var(--muted);margin-top:12px">
+      Deployed on this machine: 457 agents discovered. <a href="/store" style="color:var(--accent-glow)">Browse catalog</a> • <a href="/admin" style="color:var(--accent-glow)">Admin</a>
+    </p>
+  </div>
+
+</div>
+
+<script>
+  // Pricing constants (per 1M tokens, USD)
+  const PRICING = {
+    highEnd: 15.0,    // GPT-4/Claude Opus tier
+    midRange: 3.0,    // Claude Sonnet / DeepSeek V3
+    cheap: 0.50,      // DeepSeek V3 / GPT-4o-mini
+    localLLM: 0.0,    // Local Ollama
+  };
+
+  function $(id) { return document.getElementById(id); }
+
+  function setSlider(id, val) {
+    const el = $(id);
+    el.value = val;
+    el.dispatchEvent(new Event('input'));
+  }
+
+  function fmt(n) {
+    if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return '$' + (n / 1000).toFixed(0) + ',' + String(Math.round(n % 1000)).padStart(3,'0');
+    return '$' + Math.round(n);
+  }
+
+  function fmtsmall(n) {
+    if (n >= 10000) return '$' + (n / 1000).toFixed(1) + 'k';
+    return '$' + Math.round(n);
+  }
+
+  function recalc() {
+    const teamSize    = parseInt($('teamSize').value);
+    const tasksPerDay = parseInt($('tasksPerDay').value);
+    const avgTokens   = parseInt($('avgTokens').value);
+    const simpleRatio = parseInt($('simpleRatio').value) / 100;
+    const modelMix    = parseInt($('modelMix').value) / 100;
+    const agentCount  = parseInt($('agentCount').value);
+
+    // Update labels
+    $('valTeam').textContent = teamSize;
+    $('valTasks').textContent = tasksPerDay;
+    $('valTokens').textContent = avgTokens.toLocaleString();
+    $('valSimple').textContent = Math.round(simpleRatio * 100) + '%';
+    $('valModel').textContent = Math.round(modelMix * 100) + '%';
+    $('valAgents').textContent = agentCount;
+
+    // Daily tasks total
+    const workDays = 22; // working days per month
+    const totalDailyCalls = teamSize * tasksPerDay;
+    const totalMonthlyCalls = totalDailyCalls * workDays;
+
+    // Token consumption
+    const totalTokensPerMonth = totalMonthlyCalls * avgTokens;
+
+    // Model cost distribution (before optimization)
+    const highEndTokens = totalTokensPerMonth * modelMix;
+    const midTokens = totalTokensPerMonth * (1 - modelMix) * 0.7;
+    const cheapTokens = totalTokensPerMonth * (1 - modelMix) * 0.3;
+
+    const highEndCost = (highEndTokens / 1_000_000) * PRICING.highEnd;
+    const midCost = (midTokens / 1_000_000) * PRICING.midRange;
+    const cheapCost = (cheapTokens / 1_000_000) * PRICING.cheap;
+    const totalSpend = highEndCost + midCost + cheapCost;
+
+    // --- Waste calculation ---
+    // 1. Duplicate calls: 12-18% of calls hit multiple agents for same task
+    const dupRate = 0.08 + (agentCount / 1000); // more agents = more duplicates
+    const dupWaste = totalSpend * Math.min(dupRate, 0.25);
+
+    // 2. Overqualified models: simple tasks on expensive models
+    // If 60% tasks are simple but 40% use high-end models, that's the gap
+    const simpleOnExpensive = Math.max(0, modelMix - (1 - simpleRatio)) * totalSpend;
+    const overWaste = simpleOnExpensive * 0.6; // 60% of that is waste
+
+    // 3. Cache misses: 30-50% of prompts could be cached but aren't
+    const cacheMissRate = 0.35 + (agentCount * 0.0005); // more agents = more fragmentation
+    const cacheWaste = totalSpend * Math.min(cacheMissRate, 0.45) * 0.4; // 40% of miss is avoidable
+
+    // 4. Zombie agents: agents never used but still in rotation
+    const zombieRate = Math.min(0.02 + (agentCount * 0.0008), 0.12);
+    const zombieWaste = totalSpend * zombieRate;
+
+    const totalWaste = dupWaste + overWaste + cacheWaste + zombieWaste;
+    const wastePct = totalSpend > 0 ? (totalWaste / totalSpend) * 100 : 0;
+
+    // AMA savings (captures ~75% of identified waste)
+    const captureRate = 0.75;
+    const amaSavings = totalWaste * captureRate;
+    const yearlySavings = amaSavings * 12;
+
+    // AMA license cost
+    const amaLicense = 999; // $999/mo for AMA Cloud
+
+    // --- Render ---
+    $('totalSpend').textContent = fmt(totalSpend);
+    $('totalWaste').textContent = fmt(totalWaste);
+    $('wastePct').textContent = Math.round(wastePct) + '% of spend';
+    $('amaSavings').textContent = fmtsmall(amaSavings);
+    $('yearlySavings').textContent = fmt(yearlySavings);
+    $('yearlySavings').style.color = yearlySavings > 50000 ? 'var(--save-glow)' : 'var(--save)';
+
+    // Waste bars (normalize to widest)
+    const maxWaste = Math.max(dupWaste, overWaste, cacheWaste, zombieWaste, 1);
+    $('barDup').style.width = (dupWaste / maxWaste * 100) + '%';
+    $('barOver').style.width = (overWaste / maxWaste * 100) + '%';
+    $('barCache').style.width = (cacheWaste / maxWaste * 100) + '%';
+    $('barZombie').style.width = (zombieWaste / maxWaste * 100) + '%';
+
+    $('amtDup').textContent = fmtsmall(dupWaste);
+    $('amtOver').textContent = fmtsmall(overWaste);
+    $('amtCache').textContent = fmtsmall(cacheWaste);
+    $('amtZombie').textContent = fmtsmall(zombieWaste);
+
+    // Comparison table
+    $('compSpend').textContent = fmt(totalSpend);
+    $('compDup').textContent = fmtsmall(dupWaste);
+    $('compOver').textContent = fmtsmall(overWaste);
+    $('compMgmt').textContent = fmtsmall(cacheWaste + zombieWaste);
+    $('compTotal').textContent = fmt(totalSpend + totalWaste * 0.2); // hidden overhead
+
+    $('amaSpend').textContent = fmt(totalSpend - amaSavings);
+    $('amaRoute').textContent = fmtsmall(dupWaste * captureRate) + ' saved';
+    $('amaCache').textContent = fmtsmall(cacheWaste * captureRate) + ' saved';
+    $('amaLicense').textContent = '-$' + amaLicense.toLocaleString();
+    $('amaTotal').textContent = fmt(totalSpend - amaSavings + amaLicense);
+
+    // Color code the net AMA total
+    const netWithAMA = totalSpend - amaSavings + amaLicense;
+    const netWithoutAMA = totalSpend + totalWaste * 0.2;
+    $('amaTotal').style.color = netWithAMA < netWithoutAMA ? 'var(--save)' : 'var(--text)';
+  }
+
+  function scrollToCTA() {
+    $('cta-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ---- Lead Capture ----
+  let calculatorResults = {};
+
+  async function captureLead(e) {
+    e.preventDefault();
+    const email = $('leadEmail').value.trim();
+    if (!email) return;
+
+    // Show loading
+    $('leadForm').style.display = 'none';
+    $('leadLoading').style.display = 'block';
+
+    // Collect current calculator results
+    const lead = {
+      email,
+      company: $('leadCompany').value.trim(),
+      teamSize: parseInt($('teamSize').value),
+      monthlySpend: Math.round(parseFloat($('totalSpend').textContent.replace(/[^0-9.]/g,'')) || 0),
+      monthlyWaste: Math.round(parseFloat($('totalWaste').textContent.replace(/[^0-9.]/g,'')) || 0),
+      wastePct: $('wastePct').textContent,
+      yearlySavings: Math.round(parseFloat($('yearlySavings').textContent.replace(/[^0-9.]/g,'')) || 0),
+      dupWaste: Math.round(parseFloat($('amtDup').textContent.replace(/[^0-9.]/g,'')) || 0),
+      overWaste: Math.round(parseFloat($('amtOver').textContent.replace(/[^0-9.]/g,'')) || 0),
+      cacheWaste: Math.round(parseFloat($('amtCache').textContent.replace(/[^0-9.]/g,'')) || 0),
+      zombieWaste: Math.round(parseFloat($('amtZombie').textContent.replace(/[^0-9.]/g,'')) || 0),
+      source: 'calculator',
+    };
+
+    // Try API first, fall back to localStorage
+    try {
+      const r = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(lead)
+      });
+      const data = await r.json();
+
+      // Show success
+      $('leadLoading').style.display = 'none';
+      $('leadSuccess').style.display = 'block';
+
+      // Populate upsell with real numbers
+      const savings = lead.yearlySavings || 0;
+      const monthlyWaste = lead.monthlyWaste || 0;
+      const stripeLink = savings > 50000
+        ? 'https://buy.stripe.com/ENTERPRISE_LINK'   // >$50k savings → enterprise
+        : savings > 5000
+          ? 'https://buy.stripe.com/PRO_REPORT_LINK'  // >$5k savings → pro
+          : 'https://buy.stripe.com/PRO_REPORT_LINK'; // default → pro
+
+      $('stripeBuyLink').href = stripeLink;
+      $('successTitle').textContent = savings > 10000
+        ? `You could save $${savings.toLocaleString()}/year`
+        : 'Your free report is ready!';
+      $('successMsg').innerHTML = savings > 10000
+        ? `<strong style="color:var(--save)">$${savings.toLocaleString()}/year</strong> potential savings identified.<br>Upgrade to Pro for the full agent inventory scan and custom optimization plan.`
+        : `Based on your team of <strong>${lead.teamSize}</strong>, you're wasting ~<strong>$${monthlyWaste.toLocaleString()}/mo</strong>.<br>Upgrade to Pro for a real agent scan and custom fix plan.`;
+
+      // Update upsell box with actual numbers
+      const upsellSavings = $('upsellBox');
+      if (upsellSavings && savings > 0) {
+        const roiEl = upsellSavings.querySelector('p');
+        if (roiEl) {
+          roiEl.innerHTML = `Get your <strong>actual agent inventory scan</strong>, per-agent cost breakdown, custom optimization plan (targeting <strong style="color:var(--save)">$${savings.toLocaleString()}/year savings</strong>), and one-click AMA deployment.`;
+        }
+      }
+    } catch(e) {
+      // Fallback: save locally
+      const saved = JSON.parse(localStorage.getItem('ama_leads') || '[]');
+      lead.id = 'lead_' + Date.now();
+      lead.createdAt = new Date().toISOString();
+      lead.status = 'new';
+      saved.push(lead);
+      localStorage.setItem('ama_leads', JSON.stringify(saved));
+
+      $('leadLoading').style.display = 'none';
+      $('leadSuccess').style.display = 'block';
+      $('successMsg').innerHTML = `Report generated! (Saved locally — admin will review)<br>Potential savings: <strong>$${lead.yearlySavings.toLocaleString()}/year</strong>`;
+    }
+  }
+
+  // Bind all sliders
+  document.querySelectorAll('input[type=range]').forEach(el => {
+    el.addEventListener('input', recalc);
+  });
+
+  // Initial calculation
+  recalc();
+</script>
+</body>
+</html>

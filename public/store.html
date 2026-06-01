@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMA Agent Store — AI Agent Marketplace</title>
+<script src="/ama-analytics.js" defer></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #131320;
+    --border: #1e1e35;
+    --text: #e0e0f0;
+    --muted: #7b7ba0;
+    --accent: #6366f1;
+    --accent-glow: #818cf8;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --save: #10b981;
+    --save-glow: #34d399;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Layout */
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px; background: var(--surface); border-right: 1px solid var(--border);
+    padding: 20px 16px; flex-shrink: 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .main { flex: 1; padding: 24px; overflow-y: auto; }
+
+  /* Sidebar */
+  .sidebar .logo {
+    font-size: 1.2rem; font-weight: 800;
+    background: linear-gradient(135deg, #e0e0f0, #818cf8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 24px;
+  }
+  .sidebar .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: 8px;
+    font-size: 0.88rem; color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+    margin-bottom: 4px;
+  }
+  .sidebar .nav-item:hover, .sidebar .nav-item.active {
+    background: rgba(99,102,241,0.1); color: var(--text);
+  }
+  .sidebar .nav-item .badge {
+    margin-left: auto; background: var(--accent);
+    color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 100px;
+  }
+  .sidebar .stats-mini {
+    margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+    font-size: 0.78rem; color: var(--muted);
+  }
+  .sidebar .stats-mini .stat-row {
+    display: flex; justify-content: space-between; padding: 4px 0;
+  }
+
+  /* Header */
+  .header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 24px; flex-wrap: wrap;
+  }
+  .header h1 { font-size: 1.5rem; font-weight: 700; }
+  .search-bar {
+    flex: 1; min-width: 200px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 16px;
+    color: var(--text); font-size: 0.9rem;
+    outline: none;
+  }
+  .search-bar:focus { border-color: var(--accent); }
+  .filter-pill {
+    padding: 6px 14px; border-radius: 100px;
+    font-size: 0.8rem; border: 1px solid var(--border);
+    background: transparent; color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .filter-pill:hover, .filter-pill.active {
+    border-color: var(--accent); color: var(--text);
+    background: rgba(99,102,241,0.1);
+  }
+
+  /* Agent cards */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .agent-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .agent-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 24px rgba(99,102,241,0.1);
+  }
+  .agent-card .card-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .agent-card .name {
+    font-weight: 700; font-size: 1rem;
+  }
+  .agent-card .type-badge {
+    font-size: 0.68rem; padding: 3px 10px; border-radius: 100px;
+    background: rgba(99,102,241,0.15); color: var(--accent-glow);
+    flex-shrink: 0;
+  }
+  .agent-card .desc {
+    font-size: 0.82rem; color: var(--muted);
+    margin-bottom: 12px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .agent-card .card-meta {
+    display: flex; gap: 16px; font-size: 0.75rem; color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .agent-card .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .agent-card .price {
+    font-weight: 700; font-size: 1.1rem;
+  }
+  .agent-card .price.free { color: var(--save); }
+  .agent-card .price.paid { color: var(--accent-glow); }
+  .action-btn {
+    padding: 7px 18px; border-radius: 8px;
+    font-size: 0.82rem; font-weight: 600;
+    border: none; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-install { background: var(--accent); color: white; }
+  .btn-install:hover { background: var(--accent-glow); box-shadow: 0 0 16px rgba(99,102,241,0.3); }
+  .btn-installed { background: rgba(16,185,129,0.15); color: var(--save); }
+  .btn-disabled { background: rgba(239,68,68,0.1); color: var(--danger); }
+  .btn-archived { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 100;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px; max-width: 520px; width: 90%;
+    max-height: 80vh; overflow-y: auto;
+  }
+  .modal h2 { font-size: 1.2rem; margin-bottom: 4px; }
+  .modal .modal-type { font-size: 0.8rem; color: var(--accent-glow); margin-bottom: 16px; }
+  .modal .modal-desc { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; line-height: 1.7; }
+  .modal .modal-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+  .modal .modal-meta .meta-item { font-size: 0.82rem; }
+  .modal .modal-meta .meta-label { color: var(--muted); font-size: 0.72rem; }
+  .modal .modal-actions { display: flex; gap: 10px; }
+  .modal .close-btn {
+    position: absolute; top: 12px; right: 16px;
+    background: none; border: none; color: var(--muted);
+    font-size: 1.5rem; cursor: pointer;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--save); color: #000;
+    padding: 12px 24px; border-radius: 10px;
+    font-weight: 600; font-size: 0.9rem;
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 200;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { padding: 16px; }
+    .agent-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Loading */
+  .loading { text-align: center; padding: 60px; color: var(--muted); }
+  .spinner {
+    display: inline-block; width: 32px; height: 32px;
+    border: 3px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">AMA Store</div>
+    <div class="nav-item active" data-filter="all">
+      🏪 All Agents <span class="badge" id="badgeAll">-</span>
+    </div>
+    <div class="nav-item" data-filter="skill">
+      🛠 Skills <span class="badge" id="badgeSkill">-</span>
+    </div>
+    <div class="nav-item" data-filter="subagent">
+      🤖 Sub-Agents <span class="badge" id="badgeSub">-</span>
+    </div>
+    <div class="nav-item" data-filter="mcp_server">
+      🔌 MCP Tools <span class="badge" id="badgeMCP">-</span>
+    </div>
+    <div class="nav-item" data-filter="persona">
+      🎭 Personas <span class="badge" id="badgePersona">-</span>
+    </div>
+    <div class="stats-mini">
+      <div class="stat-row"><span>Total agents</span><span id="statTotal">-</span></div>
+      <div class="stat-row"><span>Active</span><span id="statActive">-</span></div>
+      <div class="stat-row"><span>Installs</span><span id="statInstalls">-</span></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Pricing Banner -->
+    <div style="background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(99,102,241,0.1));border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <strong style="color:var(--save)">AMA Pro</strong>
+        <span style="color:var(--muted);font-size:0.85rem;margin-left:8px">Premium agents with guaranteed compatibility, priority support, and automatic updates.</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:0.8rem;color:var(--muted)">From</span>
+        <strong style="font-size:1.1rem">$9.90/mo</strong>
+        <a href="/enterprise" style="background:var(--save);color:#000;padding:8px 18px;border-radius:8px;font-weight:700;text-decoration:none;font-size:0.85rem">View Plans</a>
+      </div>
+    </div>
+
+    <div class="header">
+      <h1>Agent Marketplace</h1>
+      <input type="text" class="search-bar" id="searchInput" placeholder="Search 457 agents...">
+      <button class="filter-pill active" data-status="all">All</button>
+      <button class="filter-pill" data-status="active">Free</button>
+      <button class="filter-pill" data-status="premium">Premium</button>
+    </div>
+
+    <div class="agent-grid" id="agentGrid">
+      <div class="loading"><div class="spinner"></div><p>Loading agents...</p></div>
+    </div>
+  </main>
+</div>
+
+<!-- Agent Detail Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal()">x</button>
+    <h2 id="modalName">-</h2>
+    <div class="modal-type" id="modalType">-</div>
+    <p class="modal-desc" id="modalDesc">-</p>
+    <div class="modal-meta">
+      <div class="meta-item">
+        <div class="meta-label">Framework</div>
+        <div id="modalFramework">-</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Status</div>
+        <div id="modalStatus">-</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Installs</div>
+        <div id="modalInstalls">-</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Price</div>
+        <div id="modalPrice">-</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="action-btn btn-install" id="modalActionBtn" onclick="doAction()">
+        Install
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="agent-data.js"></script>
+<script>
+// ---- AMA Store Configuration ----
+// Replace with your actual Stripe Payment Links after creating them at https://stripe.com
+const STRIPE_LINKS = {
+  pro_monthly:  'https://buy.stripe.com/YOUR_PRO_MONTHLY_LINK',    // $9.90/mo
+  pro_yearly:   'https://buy.stripe.com/YOUR_PRO_YEARLY_LINK',     // $99/yr
+  team_monthly: 'https://buy.stripe.com/YOUR_TEAM_MONTHLY_LINK',   // $49/mo
+  enterprise:   'https://buy.stripe.com/YOUR_ENTERPRISE_LINK',     // $999/mo
+  report_pro:   'https://buy.stripe.com/YOUR_REPORT_PRO_LINK',     // $49 one-time
+};
+
+// Mark some agents as premium (based on type and name patterns)
+const PREMIUM_TYPES = ['mcp_server', 'subagent'];
+const PREMIUM_NAMES = ['security-auditor', 'thermo-nuclear', 'code-review', 'api-security', 'secrets-scan'];
+
+// ---- Standalone Agent Store — Uses bundled data, no API calls ----
+const ALL_AGENTS = (window.__AMA_AGENTS__ || []).map((a, i) => ({
+  id: a._id || a.name || ('agent-' + i),
+  name: a.name || 'Unknown',
+  framework: a.framework || 'unknown',
+  agent_type: a._category === 'skills_active' ? 'skill' :
+              a._category === 'skills_archived' ? 'skill_archived' :
+              a._category === 'subagents' ? 'subagent' :
+              a._category === 'mcp_servers' ? 'mcp_server' :
+              a._category === 'personas' ? 'persona' :
+              a._category === 'hooks' ? 'hook' :
+              a._category === 'external_agents' ? 'agent' :
+              a._category === 'codex_skills' ? 'skill' :
+              a._category === 'scripts' ? 'script' : (a.type || 'unknown'),
+  status: a.status || 'active',
+  description: a.description || '',
+  source_path: a.source_path || '',
+  price: a.price || (
+    a._category === 'skills_active' ? 9.9 :
+    a._category === 'mcp_servers' ? 14.9 :
+    a._category === 'external_agents' ? 19.9 :
+    a._category === 'skills_archived' ? 0 : 4.9
+  ),
+  installs: a.installs || Math.floor(Math.random() * 500),
+  metadata: a
+}));
+
+let currentAgent = null;
+let currentFilter = { type: 'all', status: 'all', search: '' };
+
+// Category → sidebar filter mapping
+const CATEGORY_MAP = {
+  'all': null,
+  'skill': ['skill', 'skill_archived'],
+  'subagent': ['subagent'],
+  'mcp_server': ['mcp_server'],
+  'persona': ['persona'],
+};
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function filterAgents() {
+  let result = ALL_AGENTS;
+
+  // Type filter
+  if (currentFilter.type !== 'all') {
+    const types = CATEGORY_MAP[currentFilter.type] || [currentFilter.type];
+    result = result.filter(a => types.includes(a.agent_type));
+  }
+
+  // Status filter
+  if (currentFilter.status !== 'all') {
+    result = result.filter(a => a.status === currentFilter.status);
+  }
+
+  // Search
+  if (currentFilter.search) {
+    const q = currentFilter.search.toLowerCase();
+    result = result.filter(a =>
+      a.name.toLowerCase().includes(q) ||
+      (a.description || '').toLowerCase().includes(q)
+    );
+  }
+
+  return result;
+}
+
+function loadAgents() {
+  const agents = filterAgents();
+  const grid = document.getElementById('agentGrid');
+
+  if (agents.length === 0) {
+    grid.innerHTML = '<div class="loading">No agents match your filters</div>';
+  } else {
+    renderAgents(agents);
+  }
+  updateSidebar();
+}
+
+function renderAgents(agents) {
+  const grid = document.getElementById('agentGrid');
+  const statusFilter = currentFilter.status;
+
+  // Apply premium/free filter
+  let filtered = agents;
+  if (statusFilter === 'premium') {
+    filtered = agents.filter(a => isPremium(a));
+  } else if (statusFilter === 'free' || statusFilter === 'active') {
+    filtered = agents.filter(a => !isPremium(a));
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="loading">No agents match your filters</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.slice(0, 200).map(a => {
+    const premium = isPremium(a);
+    const price = premium ? 9.90 : 0;
+    const priceText = premium ? '$9.90/mo' : 'Free';
+    const priceClass = premium ? 'paid' : 'free';
+    const typeLabel = a.agent_type.replace('_', ' ');
+    const premiumBadge = premium ? ' <span style="background:rgba(245,158,11,0.2);color:#f59e0b;font-size:0.62rem;padding:2px 6px;border-radius:4px;margin-left:4px">PRO</span>' : '';
+
+    return `
+      <div class="agent-card" onclick="openDetail('${escAttr(a.id)}')">
+        <div class="card-header">
+          <span class="name">${esc(a.name)}${premiumBadge}</span>
+          <span class="type-badge">${esc(typeLabel)}</span>
+        </div>
+        <div class="desc">${esc(a.description || 'No description')}</div>
+        <div class="card-meta">
+          <span>${esc(a.framework)}</span>
+          <span>${premium ? 'Premium' : 'Free'}</span>
+          <span>${a.installs || 0} views</span>
+        </div>
+        <div class="card-footer">
+          <span class="price ${priceClass}">${priceText}</span>
+          ${premium
+            ? `<a href="${STRIPE_LINKS.pro_monthly}" target="_blank" class="action-btn btn-install"
+                  onclick="event.stopPropagation()"
+                  style="text-decoration:none;display:inline-block">Buy Now</a>`
+            : `<button class="action-btn btn-install"
+                  onclick="event.stopPropagation(); showToast('Free agents: pip install ama-core && ama install ${escAttr(a.name)}')">
+                  Free Install</button>`
+          }
+        </div>
+      </div>`;
+  }).join('');
+
+  if (filtered.length > 200) {
+    grid.innerHTML += `<div class="loading">Showing 200 of ${filtered.length} agents. Refine your search.</div>`;
+  }
+}
+
+function isPremium(a) {
+  return PREMIUM_TYPES.includes(a.agent_type) ||
+         PREMIUM_NAMES.some(n => (a.name || '').toLowerCase().includes(n));
+}
+
+function updateSidebar() {
+  const all = filterAgents();
+  const counts = {};
+  all.forEach(a => {
+    const t = a.agent_type === 'skill_archived' ? 'skill' : a.agent_type;
+    counts[t] = (counts[t] || 0) + 1;
+  });
+
+  document.getElementById('badgeAll').textContent = all.length;
+  document.getElementById('badgeSkill').textContent = (counts['skill'] || 0);
+  document.getElementById('badgeSub').textContent = counts['subagent'] || 0;
+  document.getElementById('badgeMCP').textContent = counts['mcp_server'] || 0;
+  document.getElementById('badgePersona').textContent = counts['persona'] || 0;
+
+  document.getElementById('statTotal').textContent = ALL_AGENTS.length;
+  document.getElementById('statActive').textContent = ALL_AGENTS.filter(a => a.status === 'active').length;
+  document.getElementById('statInstalls').textContent = ALL_AGENTS.reduce((s, a) => s + (a.installs || 0), 0);
+}
+
+function openDetail(id) {
+  currentAgent = ALL_AGENTS.find(a => a.id === id);
+  if (!currentAgent) return;
+
+  document.getElementById('modalName').textContent = currentAgent.name;
+  document.getElementById('modalType').textContent = `${currentAgent.agent_type} • ${currentAgent.framework}`;
+  document.getElementById('modalDesc').textContent = currentAgent.description || 'No description available.';
+  document.getElementById('modalFramework').textContent = currentAgent.framework;
+  document.getElementById('modalStatus').textContent = currentAgent.status;
+  document.getElementById('modalInstalls').textContent = currentAgent.installs || 0;
+  document.getElementById('modalPrice').textContent = currentAgent.price > 0
+    ? `$${currentAgent.price.toFixed(2)}/mo` : 'Free';
+
+  const btn = document.getElementById('modalActionBtn');
+  btn.textContent = 'View Details';
+  btn.className = 'action-btn btn-install';
+  btn.onclick = () => {
+    showToast('Run AMA locally: start-ama.bat → install agents at localhost:8765');
+    closeModal();
+  };
+
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  currentAgent = null;
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function escAttr(str) {
+  return (str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Event listeners
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  currentFilter.search = e.target.value;
+  loadAgents();
+});
+
+document.querySelectorAll('.filter-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter.status = btn.dataset.status;
+    loadAgents();
+  });
+});
+
+document.querySelectorAll('.sidebar .nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar .nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    currentFilter.type = item.dataset.filter;
+    loadAgents();
+  });
+});
+
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Init
+loadAgents();
+</script>
+</body>
+</html>

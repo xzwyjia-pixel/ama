@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMA Enterprise — AI Agent Governance for Teams</title>
+<script src="/ama-analytics.js" defer></script>
+<style>
+  :root { --bg:#0a0a0f; --surface:#131320; --border:#1e1e35; --text:#e0e0f0; --muted:#7b7ba0; --accent:#6366f1; --accent-glow:#818cf8; --save:#10b981; --save-glow:#34d399; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+  .container { max-width:1000px; margin:0 auto; padding:40px 24px; }
+  .hero { text-align:center; padding:60px 0 40px; }
+  .hero h1 { font-size:clamp(2rem,5vw,3rem); font-weight:800; letter-spacing:-0.02em; }
+  .hero .gradient { background:linear-gradient(135deg,#e0e0f0,#10b981,#34d399); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero p { font-size:1.1rem; color:var(--muted); max-width:600px; margin:16px auto; }
+
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:24px; }
+  .card h2 { font-size:1.2rem; margin-bottom:16px; }
+  .card h3 { font-size:1rem; margin-bottom:8px; }
+
+  /* Pricing */
+  .pricing-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; }
+  .pricing-card { background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:28px; text-align:center; position:relative; transition:all 0.2s; }
+  .pricing-card:hover { border-color:var(--accent); }
+  .pricing-card.featured { border-color:var(--save); box-shadow:0 0 30px rgba(16,185,129,0.1); }
+  .pricing-card .tier { font-size:0.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px; }
+  .pricing-card .price { font-size:2.5rem; font-weight:800; margin-bottom:4px; }
+  .pricing-card .period { font-size:0.85rem; color:var(--muted); margin-bottom:20px; }
+  .pricing-card .feature-list { list-style:none; text-align:left; margin-bottom:24px; }
+  .pricing-card .feature-list li { padding:6px 0; font-size:0.85rem; border-bottom:1px solid var(--border); }
+  .pricing-card .feature-list li:last-child { border-bottom:none; }
+  .pricing-card .feature-list .check { color:var(--save); margin-right:6px; }
+  .btn-primary { display:inline-block; background:var(--accent); color:#fff; border:none; padding:12px 32px; border-radius:10px; font-weight:700; font-size:1rem; cursor:pointer; text-decoration:none; transition:all 0.2s; }
+  .btn-primary:hover { background:var(--accent-glow); box-shadow:0 0 20px rgba(99,102,241,0.3); }
+  .btn-green { background:var(--save); color:#000; }
+  .btn-green:hover { background:var(--save-glow); }
+
+  /* Process */
+  .process { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+  .process-step { text-align:center; padding:20px; }
+  .process-step .step-num { width:40px; height:40px; border-radius:50%; background:var(--accent); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-weight:800; margin-bottom:10px; }
+  .process-step h4 { font-size:0.9rem; margin-bottom:4px; }
+  .process-step p { font-size:0.78rem; color:var(--muted); }
+
+  .testimonial { border-left:3px solid var(--save); padding-left:16px; font-style:italic; color:var(--muted); }
+  .testimonial .author { font-style:normal; color:var(--text); font-weight:600; margin-top:8px; }
+
+  @media (max-width:640px) { .container { padding:20px 16px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <h1>Your team has <span class="gradient">100+ AI agents</span>.<br>Who's managing them?</h1>
+    <p>AMA Enterprise brings governance, security, and cost control to your organization's AI agent fleet — before your CISO shuts them all down.</p>
+  </div>
+
+  <!-- Problem -->
+  <div class="card">
+    <h2>The Problem</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+      <div><h3>Security</h3><p style="color:var(--muted);font-size:0.9rem">Your developers are sending code to 50+ third-party AI APIs. Do you know which ones? Do you have an audit trail?</p></div>
+      <div><h3>Cost</h3><p style="color:var(--muted);font-size:0.9rem">No centralized tracking. 30-50% of AI API spend is wasted on duplicates, overqualified models, and cache misses.</p></div>
+      <div><h3>Compliance</h3><p style="color:var(--muted);font-size:0.9rem">SOC 2, ISO 27001, GDPR — your AI agent usage needs to be auditable. Currently, it's invisible.</p></div>
+      <div><h3>Productivity</h3><p style="color:var(--muted);font-size:0.9rem">Developers waste time choosing agents, reinventing prompts, and debugging agent conflicts.</p></div>
+    </div>
+  </div>
+
+  <!-- Solution -->
+  <div class="card">
+    <h2>The Solution: AMA Enterprise</h2>
+    <div class="process">
+      <div class="process-step"><div class="step-num">1</div><h4>Agent Discovery</h4><p>We scan your entire org — every machine, every agent, every API key</p></div>
+      <div class="process-step"><div class="step-num">2</div><h4>Security Audit</h4><p>Permission boundaries, data leak risks, API key hygiene</p></div>
+      <div class="process-step"><div class="step-num">3</div><h4>Cost Analysis</h4><p>Per-team, per-agent, per-model spend breakdown with waste identification</p></div>
+      <div class="process-step"><div class="step-num">4</div><h4>Governance Deployment</h4><p>AMA dashboard, smart routing, damage-control rules, audit logging</p></div>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="card">
+    <h2>Enterprise Plans</h2>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="tier">Quick Start</div>
+        <div class="price">$2,500</div>
+        <div class="period">one-time</div>
+        <ul class="feature-list">
+          <li><span class="check">+</span> Agent discovery scan (1 machine)</li>
+          <li><span class="check">+</span> Waste analysis report</li>
+          <li><span class="check">+</span> AMA deployment + config</li>
+          <li><span class="check">+</span> 1-hour training session</li>
+          <li><span class="check">+</span> 30-day email support</li>
+        </ul>
+        <a href="/calculator" class="btn-primary">Start with Calculator</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="tier" style="color:var(--save)">Most Popular</div>
+        <div class="price">$15,000</div>
+        <div class="period">one-time</div>
+        <ul class="feature-list">
+          <li><span class="check">+</span> Org-wide agent scan (unlimited machines)</li>
+          <li><span class="check">+</span> Full security audit report</li>
+          <li><span class="check">+</span> Custom damage-control rules</li>
+          <li><span class="check">+</span> AMA Enterprise deployment</li>
+          <li><span class="check">+</span> Team training (half-day)</li>
+          <li><span class="check">+</span> 90-day priority support</li>
+          <li><span class="check">+</span> Monthly governance review × 3</li>
+        </ul>
+        <a href="/calculator" class="btn-primary btn-green">Get Started</a>
+      </div>
+      <div class="pricing-card">
+        <div class="tier">Managed Service</div>
+        <div class="price">$3,000</div>
+        <div class="period">/month</div>
+        <ul class="feature-list">
+          <li><span class="check">+</span> Everything in Enterprise</li>
+          <li><span class="check">+</span> Continuous agent monitoring</li>
+          <li><span class="check">+</span> Monthly optimization reports</li>
+          <li><span class="check">+</span> New agent vetting</li>
+          <li><span class="check">+</span> 24/7 incident response</li>
+          <li><span class="check">+</span> Quarterly CISO audit report</li>
+          <li><span class="check">+</span> Dedicated account manager</li>
+        </ul>
+        <a href="/calculator" class="btn-primary">Contact Us</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROI -->
+  <div class="card">
+    <h2>Typical ROI</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;text-align:center">
+      <div><div style="font-size:2rem;font-weight:800;color:var(--save)">40%</div><div style="color:var(--muted);font-size:0.85rem">Average AI cost reduction</div></div>
+      <div><div style="font-size:2rem;font-weight:800;color:var(--save)">45 days</div><div style="color:var(--muted);font-size:0.85rem">Time to positive ROI</div></div>
+      <div><div style="font-size:2rem;font-weight:800;color:var(--save)">100%</div><div style="color:var(--muted);font-size:0.85rem">Audit coverage</div></div>
+      <div><div style="font-size:2rem;font-weight:800;color:var(--save)">0</div><div style="color:var(--muted);font-size:0.85rem">Security incidents</div></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="card" style="text-align:center">
+    <h2>Find out how much your org is wasting</h2>
+    <p style="color:var(--muted);margin:12px 0 24px">Use the calculator to estimate. Then we'll run the real scan.</p>
+    <a href="/calculator" class="btn-primary btn-green" style="font-size:1.1rem;padding:14px 40px">Run Free Calculator</a>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:12px">Or contact: enterprise@ama-agent.dev</p>
+  </div>
+
+  <p style="text-align:center;font-size:0.75rem;color:var(--muted);padding:20px 0">
+    <a href="/" style="color:var(--accent-glow)">Calculator</a> • <a href="/store" style="color:var(--accent-glow)">Store</a> • <a href="/admin" style="color:var(--accent-glow)">Admin</a>
+  </p>
+</div>
+</body>
+</html>

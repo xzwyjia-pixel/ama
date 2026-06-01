@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMA Admin — Lead Pipeline</title>
+<script src="/ama-analytics.js" defer></script>
+<style>
+  :root {
+    --bg:#0a0a0f; --surface:#131320; --border:#1e1e35; --text:#e0e0f0;
+    --muted:#7b7ba0; --accent:#6366f1; --accent-glow:#818cf8;
+    --danger:#ef4444; --warn:#f59e0b; --save:#10b981;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+  .container { max-width:1100px; margin:0 auto; padding:32px 24px; }
+
+  /* Header */
+  .header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:28px; flex-wrap:wrap; gap:12px;
+  }
+  .header h1 { font-size:1.5rem; font-weight:800; }
+  .header .pipeline-stats { display:flex; gap:16px; }
+  .stat-chip {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:10px; padding:8px 16px; text-align:center;
+  }
+  .stat-chip .num { font-size:1.3rem; font-weight:800; }
+  .stat-chip .lbl { font-size:0.7rem; color:var(--muted); }
+  .stat-chip.new .num { color:var(--accent-glow); }
+  .stat-chip.approved .num { color:var(--save); }
+  .stat-chip.rejected .num { color:var(--muted); }
+
+  /* Controls */
+  .controls { display:flex; gap:12px; margin-bottom:20px; align-items:center; flex-wrap:wrap; }
+  .controls button {
+    background:var(--surface); border:1px solid var(--border); color:var(--text);
+    padding:7px 16px; border-radius:8px; font-size:0.82rem; cursor:pointer;
+    transition: all 0.15s;
+  }
+  .controls button:hover { border-color:var(--accent); }
+  .controls button.active { background:rgba(99,102,241,0.15); border-color:var(--accent); color:var(--accent-glow); }
+  .auto-refresh { font-size:0.75rem; color:var(--muted); margin-left:auto; }
+
+  /* Lead cards */
+  .lead-list { display:flex; flex-direction:column; gap:12px; }
+  .lead-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:20px;
+    transition: all 0.2s;
+  }
+  .lead-card.hot { border-color:rgba(239,68,68,0.3); }
+  .lead-card.approved { border-color:rgba(16,185,129,0.3); }
+  .lead-card .lead-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:10px; flex-wrap:wrap; gap:8px;
+  }
+  .lead-card .email { font-weight:700; font-size:1rem; }
+  .lead-card .badge {
+    font-size:0.68rem; padding:3px 10px; border-radius:100px; font-weight:600;
+  }
+  .badge-new { background:rgba(99,102,241,0.2); color:var(--accent-glow); }
+  .badge-approved { background:rgba(16,185,129,0.2); color:var(--save); }
+  .badge-rejected { background:rgba(123,123,160,0.15); color:var(--muted); }
+  .badge-hot {
+    background:rgba(239,68,68,0.2); color:var(--danger);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+  .lead-card .lead-body { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:10px; margin-bottom:14px; }
+  .lead-card .metric { font-size:0.82rem; }
+  .lead-card .metric .ml { color:var(--muted); font-size:0.7rem; }
+  .lead-card .metric .mv { font-weight:700; }
+  .metric .mv.waste { color:var(--danger); }
+  .metric .mv.save { color:var(--save); }
+
+  .lead-card .lead-actions { display:flex; gap:8px; }
+  .btn-approve {
+    background:var(--save); color:#000; border:none;
+    padding:8px 20px; border-radius:8px; font-weight:700; cursor:pointer;
+    font-size:0.85rem; transition:all 0.15s;
+  }
+  .btn-approve:hover { background:#34d399; transform:translateY(-1px); }
+  .btn-reject {
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.82rem;
+  }
+  .btn-reject:hover { border-color:var(--danger); color:var(--danger); }
+  .btn-copy {
+    background:transparent; border:1px solid var(--accent); color:var(--accent-glow);
+    padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.82rem;
+  }
+  .btn-copy:hover { background:rgba(99,102,241,0.1); }
+
+  /* Empty state */
+  .empty { text-align:center; padding:60px; color:var(--muted); }
+  .empty .big-num { font-size:4rem; font-weight:800; color:var(--border); }
+  .toast {
+    position:fixed; bottom:24px; right:24px;
+    background:var(--save); color:#000;
+    padding:12px 24px; border-radius:10px; font-weight:600;
+    transform:translateY(100px); opacity:0; transition:all 0.3s; z-index:200;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .loading { text-align:center; padding:40px; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>AMA Admin — Lead Pipeline</h1>
+    <div class="pipeline-stats">
+      <div class="stat-chip new"><div class="num" id="statNew">0</div><div class="lbl">New</div></div>
+      <div class="stat-chip approved"><div class="num" id="statApproved">0</div><div class="lbl">Approved</div></div>
+      <div class="stat-chip"><div class="num" id="statTotal">0</div><div class="lbl">Total</div></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="active" data-filter="all">All Leads</button>
+    <button data-filter="new">New</button>
+    <button data-filter="approved">Approved</button>
+    <button data-filter="rejected">Rejected</button>
+    <button data-filter="hot">Hot Leads (+$10k/yr)</button>
+    <button onclick="refreshLeads()">Refresh</button>
+    <span class="auto-refresh">Auto-refresh: 30s</span>
+  </div>
+
+  <div class="lead-list" id="leadList">
+    <div class="loading">Loading leads...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/leads';
+let currentFilter = 'all';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str || ''; return d.innerHTML;
+}
+
+function fmt(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + (n/1000).toFixed(0) + 'k';
+  return '$' + Math.round(n);
+}
+
+async function refreshLeads() {
+  const list = document.getElementById('leadList');
+  try {
+    const r = await fetch(API);
+    const data = await r.json();
+    const allLeads = data.leads || [];
+
+    // Stats
+    document.getElementById('statNew').textContent = allLeads.filter(l => l.status === 'new').length;
+    document.getElementById('statApproved').textContent = allLeads.filter(l => l.status === 'approved').length;
+    document.getElementById('statTotal').textContent = data.total || allLeads.length;
+
+    // Filter
+    let filtered = allLeads;
+    if (currentFilter === 'new') filtered = allLeads.filter(l => l.status === 'new');
+    if (currentFilter === 'approved') filtered = allLeads.filter(l => l.status === 'approved');
+    if (currentFilter === 'rejected') filtered = allLeads.filter(l => l.status === 'rejected');
+    if (currentFilter === 'hot') filtered = allLeads.filter(l => (l.yearlySavings || 0) >= 10000);
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty"><div class="big-num">0</div><p>No leads yet. Share the <a href="/calculator" style="color:var(--accent-glow)">Calculator</a> to start capturing.</p></div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(l => {
+      const isHot = (l.yearlySavings || 0) >= 10000;
+      const isNew = l.status === 'new';
+      const statusBadge = {
+        new: 'badge-new', approved: 'badge-approved', rejected: 'badge-rejected'
+      }[l.status] || 'badge-new';
+      const hotBadge = isHot && isNew ? ' <span class="badge badge-hot">HOT</span>' : '';
+
+      return `
+      <div class="lead-card ${isHot && isNew ? 'hot' : ''} ${l.status === 'approved' ? 'approved' : ''}">
+        <div class="lead-header">
+          <div>
+            <span class="email">${esc(l.email)}</span>
+            ${hotBadge}
+            <span style="color:var(--muted);font-size:0.75rem;margin-left:8px">${l.company || ''}</span>
+          </div>
+          <span class="badge ${statusBadge}">${l.status.toUpperCase()}</span>
+        </div>
+        <div class="lead-body">
+          <div class="metric"><div class="ml">Monthly Spend</div><div class="mv">${fmt(l.monthlySpend)}</div></div>
+          <div class="metric"><div class="ml">Wasted</div><div class="mv waste">${fmt(l.monthlyWaste)} (${l.wastePct})</div></div>
+          <div class="metric"><div class="ml">AMA Savings</div><div class="mv save">${fmt(l.yearlySavings)}/yr</div></div>
+          <div class="metric"><div class="ml">Team</div><div class="mv">${l.teamSize} devs</div></div>
+          <div class="metric"><div class="ml">Date</div><div class="mv">${(l.createdAt||'').slice(0,10)}</div></div>
+        </div>
+        <div class="lead-actions">
+          ${l.status === 'new' ? `
+            <button class="btn-approve" onclick="approveLead('${l.id}')">Approve</button>
+            <button class="btn-reject" onclick="rejectLead('${l.id}')">Reject</button>
+          ` : ''}
+          ${l.status === 'approved' ? `
+            <button class="btn-copy" onclick="copyOnboarding('${l.id}')">Copy Onboarding Email</button>
+            <button class="btn-copy" onclick="copyInstallCmd('${l.id}')">Copy Install Command</button>
+          ` : ''}
+          <span style="font-size:0.7rem;color:var(--muted);margin-left:auto">
+            ID: ${l.id} ${l.approvedAt ? 'Approved: '+l.approvedAt.slice(0,10) : ''}
+          </span>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="loading">API not available. Is the server running?</div>';
+  }
+}
+
+async function approveLead(id) {
+  try {
+    const r = await fetch(API, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id, status: 'approved'})
+    });
+    const data = await r.json();
+    if (data.success) {
+      showToast('Approved! Onboarding report ready.');
+      // Show the report
+      if (data.report) {
+        setTimeout(() => {
+          alert('Onboarding Report:\n\n' + data.report.summary);
+        }, 500);
+      }
+      refreshLeads();
+    }
+  } catch(e) { showToast('Error: API unavailable'); }
+}
+
+async function rejectLead(id) {
+  try {
+    await fetch(API, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id, status: 'rejected'})
+    });
+    showToast('Lead rejected');
+    refreshLeads();
+  } catch(e) { showToast('Error: API unavailable'); }
+}
+
+async function copyOnboarding(id) {
+  try {
+    const r = await fetch(API, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id, status: 'approved'})
+    });
+    const data = await r.json();
+    if (data.report) {
+      await navigator.clipboard.writeText(data.report.summary);
+      showToast('Onboarding email copied to clipboard!');
+    }
+  } catch(e) { showToast('Error copying'); }
+}
+
+async function copyInstallCmd(id) {
+  const cmd = 'pip install ama-core && ama scan && ama start';
+  await navigator.clipboard.writeText(cmd);
+  showToast('Install command copied: ' + cmd);
+}
+
+// Filters
+document.querySelectorAll('.controls button[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.controls button[data-filter]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    refreshLeads();
+  });
+});
+
+// Init
+refreshLeads();
+setInterval(refreshLeads, 30000);
+
+// Auto-notification for new leads (check every 30s)
+let lastLeadCount = 0;
+setInterval(async () => {
+  try {
+    const r = await fetch(API + '?status=new');
+    const data = await r.json();
+    if (data.total > lastLeadCount && lastLeadCount > 0) {
+      showToast(`${data.total - lastLeadCount} new lead(s)!`);
+    }
+    lastLeadCount = data.total;
+  } catch(e) {}
+}, 30000);
+</script>
+</body>
+</html>
