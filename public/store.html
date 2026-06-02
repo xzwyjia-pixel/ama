@@ -384,8 +384,16 @@ function loadAgents() {
   const grid = document.getElementById('agentGrid');
 
   if (agents.length === 0) {
-    grid.innerHTML = '<div class="loading">No agents match your filters</div>';
+    const catName = currentFilter.type === 'all' ? '' : (currentFilter.type.replace('_', ' '));
+    grid.innerHTML = `<div class="loading" style="padding:60px 20px;text-align:center">
+      <div style="font-size:3rem;margin-bottom:16px">📭</div>
+      <p style="font-size:1.1rem;color:var(--text);margin-bottom:8px">No agents in this category</p>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px">The "${catName}" category is empty. Check back later or browse all agents.</p>
+      <button class="filter-pill" onclick="resetToAll()" style="cursor:pointer;padding:10px 24px;font-size:0.9rem;border-color:var(--accent);color:var(--accent)">← Back to All Agents</button>
+    </div>`;
+    document.querySelectorAll('.filter-pill').forEach(b => b.style.opacity = '0.4');
   } else {
+    document.querySelectorAll('.filter-pill').forEach(b => b.style.opacity = '1');
     renderAgents(agents);
   }
   updateSidebar();
@@ -404,7 +412,13 @@ function renderAgents(agents) {
   }
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="loading">No agents match your filters</div>';
+    const statusLabel = statusFilter === 'premium' ? 'Premium' : 'Free';
+    grid.innerHTML = `<div class="loading" style="padding:60px 20px;text-align:center">
+      <div style="font-size:3rem;margin-bottom:16px">🔍</div>
+      <p style="font-size:1.1rem;color:var(--text);margin-bottom:8px">No ${statusLabel} agents found</p>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px">Try selecting a different filter or browse all agents.</p>
+      <button class="filter-pill" onclick="resetFilters()" style="cursor:pointer;padding:10px 24px;font-size:0.9rem;border-color:var(--accent);color:var(--accent)">Reset Filters</button>
+    </div>`;
     return;
   }
 
@@ -541,6 +555,24 @@ document.getElementById('modal').addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
 });
+
+function resetToAll() {
+  currentFilter.type = 'all';
+  document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
+  const allItem = document.querySelector('.sidebar .nav-item[data-filter="all"]');
+  if (allItem) allItem.classList.add('active');
+  loadAgents();
+}
+
+function resetFilters() {
+  currentFilter.status = 'all';
+  currentFilter.search = '';
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  const allPill = document.querySelector('.filter-pill[data-status="all"]');
+  if (allPill) allPill.classList.add('active');
+  loadAgents();
+}
 
 // Init
 loadAgents();
