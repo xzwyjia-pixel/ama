@@ -317,23 +317,23 @@ const ALL_AGENTS = (window.__AMA_AGENTS__ || []).map((a, i) => ({
   id: a._id || a.name || ('agent-' + i),
   name: a.name || 'Unknown',
   framework: a.framework || 'unknown',
-  agent_type: a._category === 'skills_active' ? 'skill' :
-              a._category === 'skills_archived' ? 'skill_archived' :
-              a._category === 'subagents' ? 'subagent' :
-              a._category === 'mcp_servers' ? 'mcp_server' :
-              a._category === 'personas' ? 'persona' :
-              a._category === 'hooks' ? 'hook' :
-              a._category === 'external_agents' ? 'agent' :
-              a._category === 'codex_skills' ? 'skill' :
-              a._category === 'scripts' ? 'script' : (a.type || 'unknown'),
+  agent_type: a.type === 'skills_active' ? 'skill' :
+              a.type === 'skills_archived' ? 'skill_archived' :
+              a.type === 'subagents' ? 'subagent' :
+              a.type === 'mcp_servers' ? 'mcp_server' :
+              a.type === 'personas' ? 'persona' :
+              a.type === 'hooks' ? 'hook' :
+              a.type === 'external_agents' ? 'agent' :
+              a.type === 'codex_skills' ? 'skill' :
+              a.type === 'scripts' ? 'script' : (a.type || 'unknown'),
   status: a.status || 'active',
   description: a.description || '',
   source_path: a.source_path || '',
   price: a.price || (
-    a._category === 'skills_active' ? 9.9 :
-    a._category === 'mcp_servers' ? 14.9 :
-    a._category === 'external_agents' ? 19.9 :
-    a._category === 'skills_archived' ? 0 : 4.9
+    a.type === 'skills_active' ? 9.9 :
+    a.type === 'mcp_servers' ? 14.9 :
+    a.type === 'external_agents' ? 19.9 :
+    a.type === 'skills_archived' ? 0 : 4.9
   ),
   installs: a.installs || Math.floor(Math.random() * 500),
   metadata: a

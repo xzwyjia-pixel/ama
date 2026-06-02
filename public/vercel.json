@@ -2,12 +2,10 @@
   "version": 2,
   "public": true,
   "functions": {
-    "api/leads.js": { "memory": 256, "maxDuration": 10 },
-    "api/gumroad-webhook.js": { "memory": 256, "maxDuration": 10 }
+    "api/leads.js": { "memory": 256, "maxDuration": 10 }
   },
   "routes": [
     { "src": "/api/leads", "dest": "/api/leads" },
-    { "src": "/api/gumroad-webhook", "dest": "/api/gumroad-webhook" },
     { "src": "/admin", "dest": "/admin.html" },
     { "src": "/store", "dest": "/store.html" },
     { "src": "/enterprise", "dest": "/enterprise.html" },
