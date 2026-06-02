@@ -2,16 +2,19 @@
   "version": 2,
   "public": true,
   "functions": {
-    "api/leads.js": {
-      "memory": 256,
-      "maxDuration": 10
-    }
+    "api/leads.js": { "memory": 256, "maxDuration": 10 },
+    "api/gumroad-webhook.js": { "memory": 256, "maxDuration": 10 }
   },
   "routes": [
     { "src": "/api/leads", "dest": "/api/leads" },
+    { "src": "/api/gumroad-webhook", "dest": "/api/gumroad-webhook" },
     { "src": "/admin", "dest": "/admin.html" },
     { "src": "/store", "dest": "/store.html" },
     { "src": "/enterprise", "dest": "/enterprise.html" },
+    { "src": "/shield", "dest": "/shield.html" },
+    { "src": "/desktop", "dest": "/desktop.html" },
+    { "src": "/fleet", "dest": "/fleet.html" },
+    { "src": "/guard", "dest": "/guard.html" },
     { "src": "/calculator", "dest": "/index.html" },
     { "src": "/", "dest": "/index.html" }
   ]

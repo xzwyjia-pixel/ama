@@ -1,15 +1,14 @@
 # AMA — Agent Management Agent
 
-**The operating system for your AI agents.**
+**I scanned my PC and found 457 AI agents. You probably have more than you think.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-AMA scans, manages, and optimizes every AI agent on your machine —
-across **Claude Code, Pi Agent, Codex CLI, and any MCP server**.
-We found **457 unmanaged agents** on a single developer machine.
-You probably have more than you think.
+**Try the live calculator → [ama-agent-store.vercel.app](https://ama-agent-store.vercel.app)**
+
+AMA discovers, routes, and secures every AI agent across **Claude Code, Pi Agent, Codex CLI, and any MCP server** — from a single terminal.
 
 ```bash
 pip install ama-core && ama scan && ama start
