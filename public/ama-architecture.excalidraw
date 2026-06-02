@@ -1,0 +1,33 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {"type":"text","x":280,"y":20,"width":400,"height":40,"text":"一人公司 × AI Agent 组织架构","fontSize":28,"fontFamily":1,"textAlign":"center","strokeColor":"#e0e0f0","backgroundColor":"#06060c"},
+    {"type":"text","x":320,"y":60,"width":320,"height":24,"text":"1 Human + 50 AI Agents = $1M/Year","fontSize":16,"fontFamily":3,"textAlign":"center","strokeColor":"#06b6d4","backgroundColor":"#06060c"},
+    {"type":"rectangle","x":340,"y":110,"width":280,"height":70,"backgroundColor":"#1a1a35","strokeColor":"#6366f1","strokeWidth":2,"roundness":{"type":3},"boundElements":[{"id":"a1","type":"text"}]},
+    {"type":"text","id":"a1","x":360,"y":125,"width":240,"height":40,"text":"🧑‍💻 Founder / CEO\n(唯一人类 — 决策+授权)","fontSize":14,"fontFamily":1,"textAlign":"center","strokeColor":"#e0e0f0","containerId":null},
+    {"type":"arrow","x":480,"y":180,"width":0,"height":40,"strokeColor":"#6366f1","strokeWidth":2},
+    {"type":"rectangle","x":340,"y":220,"width":280,"height":40,"backgroundColor":"#1a1a35","strokeColor":"#06b6d4","strokeWidth":1,"roundness":{"type":3},"boundElements":[{"id":"a2","type":"text"}]},
+    {"type":"text","id":"a2","x":350,"y":230,"width":260,"height":20,"text":"AMA — Agent 编排层 (scan/route/spend/audit)","fontSize":12,"fontFamily":3,"textAlign":"center","strokeColor":"#06b6d4"},
+    {"type":"arrow","x":380,"y":260,"width":0,"height":30,"strokeColor":"#06b6d4","strokeWidth":1},
+    {"type":"arrow","x":480,"y":260,"width":0,"height":30,"strokeColor":"#06b6d4","strokeWidth":1},
+    {"type":"arrow","x":580,"y":260,"width":0,"height":30,"strokeColor":"#06b6d4","strokeWidth":1},
+    {"type":"rectangle","x":140,"y":300,"width":180,"height":90,"backgroundColor":"#1a1a35","strokeColor":"#10b981","strokeWidth":1,"roundness":{"type":3},"boundElements":[{"id":"b1","type":"text"}]},
+    {"type":"text","id":"b1","x":150,"y":310,"width":160,"height":70,"text":"🤖 内容 Agent 集群\n(写作/审核/SEO)\n5-Agent 流水线","fontSize":12,"fontFamily":1,"textAlign":"center","strokeColor":"#10b981"},
+    {"type":"rectangle","x":370,"y":300,"width":180,"height":90,"backgroundColor":"#1a1a35","strokeColor":"#10b981","strokeWidth":1,"roundness":{"type":3},"boundElements":[{"id":"b2","type":"text"}]},
+    {"type":"text","id":"b2","x":380,"y":310,"width":160,"height":70,"text":"💬 客服 Agent 集群\n(3层升级链路)\nFAQ→专业→人工","fontSize":12,"fontFamily":1,"textAlign":"center","strokeColor":"#10b981"},
+    {"type":"rectangle","x":600,"y":300,"width":180,"height":90,"backgroundColor":"#1a1a35","strokeColor":"#10b981","strokeWidth":1,"roundness":{"type":3},"boundElements":[{"id":"b3","type":"text"}]},
+    {"type":"text","id":"b3","x":610,"y":310,"width":160,"height":70,"text":"📊 数据分析 Agent\n(5-Agent 并行)\n清洗→趋势→归因","fontSize":12,"fontFamily":1,"textAlign":"center","strokeColor":"#10b981"},
+    {"type":"rectangle","x":840,"y":300,"width":160,"height":90,"backgroundColor":"#1a1a35","strokeColor":"#f59e0b","strokeWidth":1,"roundness":{"type":3},"boundElements":[{"id":"b4","type":"text"}]},
+    {"type":"text","id":"b4","x":850,"y":310,"width":140,"height":70,"text":"🔒 RuleGuard\n(合规辩论协议)\nA/B/C+Referee","fontSize":12,"fontFamily":1,"textAlign":"center","strokeColor":"#f59e0b"},
+    {"type":"arrow","x":230,"y":390,"width":0,"height":30,"strokeColor":"#10b981","strokeWidth":1},
+    {"type":"arrow","x":460,"y":390,"width":0,"height":30,"strokeColor":"#10b981","strokeWidth":1},
+    {"type":"arrow","x":690,"y":390,"width":0,"height":30,"strokeColor":"#10b981","strokeWidth":1},
+    {"type":"arrow","x":920,"y":390,"width":0,"height":30,"strokeColor":"#f59e0b","strokeWidth":1},
+    {"type":"rectangle","x":140,"y":430,"width":860,"height":50,"backgroundColor":"#0d0d1a","strokeColor":"#6366f1","strokeWidth":1,"roundness":{"type":3},"boundElements":[{"id":"c1","type":"text"}]},
+    {"type":"text","id":"c1","x":150,"y":440,"width":840,"height":30,"text":"💰 成本底座: DeepSeek API · 127.0.0.1:5000 代理 · Token 成本追踪 · 指数退避 · 优雅降级","fontSize":13,"fontFamily":3,"textAlign":"center","strokeColor":"#6b6b90"},
+    {"type":"text","x":140,"y":500,"width":860,"height":24,"text":"传统公司: 50人 · $2.4M/年  →  AI-Native: 1人+50Agent · $220K/年  (节省 90.8%)","fontSize":14,"fontFamily":1,"textAlign":"center","strokeColor":"#10b981","backgroundColor":"#06060c"}
+  ],
+  "appState": {"viewBackgroundColor":"#06060c","gridSize":null}
+}
