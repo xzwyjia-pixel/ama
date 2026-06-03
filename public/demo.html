@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMA Demo — Agent Management Application</title>
+<style>
+:root { --bg:#06060c; --surface:#0d0d1a; --text:#e0e0f0; --muted:#6b6b90; --accent:#6366f1; --accent2:#06b6d4; --save:#10b981; --warn:#f59e0b; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Courier New',monospace; height:100vh; overflow:hidden; }
+.scene { display:none; width:100%; height:100vh; position:absolute; top:0; left:0; padding:60px; align-items:center; justify-content:center; }
+.scene.active { display:flex; }
+
+.terminal { background:var(--surface); border:1px solid #1a1a35; border-radius:12px; padding:40px; max-width:900px; width:100%; min-height:400px; }
+.terminal .line { margin-bottom:8px; opacity:0; animation:fadeIn 0.3s forwards; font-size:1.05em; }
+.terminal .line .prompt { color:var(--save); }
+.terminal .line .cmd { color:var(--accent2); }
+.terminal .line .output { color:var(--muted); }
+.terminal .line .highlight { color:var(--warn); font-weight:700; }
+.terminal .cursor { display:inline-block; width:10px; height:20px; background:var(--accent); animation:blink 1s infinite; vertical-align:text-bottom; }
+
+.dashboard { max-width:1100px; width:100%; }
+.dashboard h1 { font-size:1.8em; margin-bottom:8px; background:linear-gradient(135deg,#e0e0f0,#818cf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.dashboard .subtitle { color:var(--muted); margin-bottom:32px; font-size:0.9em; }
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+.stat { background:var(--surface); border:1px solid #1a1a35; border-radius:12px; padding:24px; text-align:center; }
+.stat .num { font-size:2.4em; font-weight:800; opacity:0; }
+.stat .num.show { animation:countUp 1.5s forwards; }
+.stat:nth-child(1) .num { color:var(--accent); }
+.stat:nth-child(2) .num { color:var(--accent2); }
+.stat:nth-child(3) .num { color:var(--warn); }
+.stat:nth-child(4) .num { color:var(--save); }
+.stat .label { color:var(--muted); font-size:0.85em; margin-top:4px; }
+
+.commands { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:32px; }
+.cmd-card { background:var(--surface); border:1px solid #1a1a35; border-radius:10px; padding:20px; text-align:center; opacity:0; }
+.cmd-card.show { animation:fadeIn 0.5s forwards; }
+.cmd-card code { font-size:1.2em; color:var(--save); }
+.cmd-card .desc { color:var(--muted); font-size:0.8em; margin-top:8px; }
+
+.cta-line { text-align:center; font-size:1.1em; color:var(--accent2); opacity:0; }
+.cta-line.show { animation:fadeIn 0.5s forwards; }
+
+@keyframes fadeIn { to { opacity:1; } }
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+@keyframes countUp { 0% { opacity:0; transform:translateY(10px); } 100% { opacity:1; transform:translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- SCENE 1: Terminal -->
+<div class="scene active" id="scene1">
+<div class="terminal" id="term"></div>
+</div>
+
+<!-- SCENE 2: Dashboard -->
+<div class="scene" id="scene2">
+<div class="dashboard">
+  <h1>AMA — Agent Management Agent</h1>
+  <p class="subtitle">github.com/xzwyjia-pixel/ama · MIT License</p>
+  <div class="stats">
+    <div class="stat"><div class="num" id="num1">457</div><div class="label">Agents Discovered</div></div>
+    <div class="stat"><div class="num" id="num2">192</div><div class="label">Active Skills</div></div>
+    <div class="stat"><div class="num" id="num3">30%</div><div class="label">Waste Eliminated</div></div>
+    <div class="stat"><div class="num" id="num4">$0.002</div><div class="label">Cost Per Audit</div></div>
+  </div>
+  <div class="commands">
+    <div class="cmd-card" id="cmd1"><code>ama scan</code><div class="desc">Discover every agent</div></div>
+    <div class="cmd-card" id="cmd2"><code>ama route</code><div class="desc">Right model, every task</div></div>
+    <div class="cmd-card" id="cmd3"><code>ama spend</code><div class="desc">Track costs in real-time</div></div>
+    <div class="cmd-card" id="cmd4"><code>ama audit</code><div class="desc">Security & permissions</div></div>
+  </div>
+  <div class="cta-line" id="cta">Open Source · MIT · pip install ama-core && ama scan && ama start</div>
+</div>
+</div>
+
+<script>
+const term = document.getElementById('term');
+const lines = [
+  { text:'$ ', cls:'prompt' },
+  { text:'ama scan', cls:'cmd' },
+  { text:'', cls:'' },
+  { text:'Scanning agent ecosystem...', cls:'output', delay:400 },
+  { text:'  [Claude Code]   192 active skills', cls:'output', delay:300 },
+  { text:'  [Claude Code]   191 archived skills', cls:'output', delay:300 },
+  { text:'  [Codex CLI]      37 skills', cls:'output', delay:300 },
+  { text:'  [Pi Agent]        8 sub-agents, 12 scripts', cls:'output', delay:300 },
+  { text:'  [MCP Servers]     8 connected services', cls:'output', delay:300 },
+  { text:'  [External]        4 standalone agents', cls:'output', delay:300 },
+  { text:'', cls:'', delay:200 },
+  { text:'  ────────────────────────────', cls:'output', delay:200 },
+  { text:'  TOTAL: ', cls:'output', delay:200 },
+  { text:'457 AI agent assets', cls:'highlight', delay:500 },
+  { text:'', cls:'', delay:400 },
+  { text:'  Status: ', cls:'output', delay:200 },
+  { text:'0 managed. 0 tracked. 0 secured.', cls:'highlight', delay:600 },
+  { text:'', cls:'', delay:600 },
+  { text:'$ ', cls:'prompt', delay:400 },
+  { text:'ama agent-store.vercel.app', cls:'cmd', delay:400 },
+  { text:'', cls:'', delay:1000 },
+];
+
+let i = 0;
+function addLine() {
+  if (i >= lines.length) {
+    setTimeout(() => {
+      document.getElementById('scene1').classList.remove('active');
+      document.getElementById('scene2').classList.add('active');
+      animateScene2();
+    }, 1000);
+    return;
+  }
+  const l = lines[i];
+  const delay = l.delay || (l.text === '' ? 150 : 350);
+  const div = document.createElement('div');
+  div.className = 'line';
+  if (l.cls) {
+    const span = document.createElement('span');
+    span.className = l.cls;
+    span.textContent = l.text;
+    div.appendChild(span);
+  } else {
+    div.innerHTML = '&nbsp;';
+  }
+  term.appendChild(div);
+  term.scrollTop = term.scrollHeight;
+  i++;
+  setTimeout(addLine, delay);
+}
+
+function animateScene2() {
+  setTimeout(() => document.getElementById('num1').classList.add('show'), 200);
+  setTimeout(() => document.getElementById('num2').classList.add('show'), 600);
+  setTimeout(() => document.getElementById('num3').classList.add('show'), 1000);
+  setTimeout(() => document.getElementById('num4').classList.add('show'), 1400);
+  setTimeout(() => document.getElementById('cmd1').classList.add('show'), 1800);
+  setTimeout(() => document.getElementById('cmd2').classList.add('show'), 2000);
+  setTimeout(() => document.getElementById('cmd3').classList.add('show'), 2200);
+  setTimeout(() => document.getElementById('cmd4').classList.add('show'), 2400);
+  setTimeout(() => document.getElementById('cta').classList.add('show'), 2800);
+}
+
+setTimeout(addLine, 500);
+</script>
+</body>
+</html>
