@@ -12,9 +12,9 @@ AMA discovers, routes, and secures every AI agent across **Claude Code, Pi Agent
 
 ## Demo
 
-[▶ Watch the demo](https://ama-agent-store.vercel.app/ama-demo.webm)
+[▶ Watch the demo](https://ama-pi-gray.vercel.app/ama-demo.webm)
 
-<video src="https://ama-agent-store.vercel.app/ama-demo.webm" width="640" controls></video>
+<video src="https://ama-pi-gray.vercel.app/ama-demo.webm" width="640" controls></video>
 
 *18 seconds: terminal scan → 457 agents discovered → dashboard*
 
