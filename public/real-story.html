@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我不会写代码，但我用 AI 在 48 小时内搭了一个 SaaS 生意</title>
+<meta name="description" content="这是真实记录。不是教程。不是成功学。是一个不懂代码的人，坐在一台电脑前，靠 AI 辅助，试图从零搭建一个能赚钱的软件生意的全过程。">
+<meta property="og:title" content="我不会写代码，但我用 AI 在 48 小时内搭了一个 SaaS 生意">
+<meta property="og:description" content="真实记录：0 行代码，$0.50/月成本，17 条内容，0 个客户，10 个教训。">
+<style>
+body { font-family: Georgia, 'Times New Roman', serif; max-width: 720px; margin: 0 auto; padding: 40px 24px; background: #fafafa; color: #1a1a1a; line-height: 1.9; }
+h1 { font-size: 2em; font-weight: 800; margin-bottom: 8px; }
+h2 { font-size: 1.4em; margin-top: 40px; }
+h3 { font-size: 1.1em; margin-top: 30px; color: #444; }
+.subtitle { color: #666; font-size: 1em; margin-bottom: 32px; }
+blockquote { border-left: 3px solid #6366f1; padding-left: 16px; color: #555; margin: 20px 0; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #ddd; padding: 10px 14px; text-align: left; font-size: 0.95em; }
+th { background: #f5f5f5; }
+code { background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+strong { color: #1a1a1a; }
+ol { padding-left: 20px; }
+ol li { margin-bottom: 12px; }
+.footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.85em; color: #888; }
+</style>
+</head>
+<body>
+<h1>我不会写代码，但我用 AI 在 48 小时内搭了一个 SaaS 生意</h1>
+<p class="subtitle">这是真实记录。不是教程。不是成功学。是一个不懂代码的人，坐在一台电脑前，靠 AI 辅助，试图从零搭建一个能赚钱的软件生意的全过程。</p>
+
+<p><strong>作者：xzwyjia</strong> · 2026-06-03</p>
+
+<h2>起点：我不会写代码</h2>
+<p>我连 HTML 标签都分不清。我能做的：提需求、做决策、确认收款。</p>
+<p>我的 AI（Claude Code）能做：写代码、部署网站、调试 Bug、生成内容、操作终端、管理服务器。</p>
+<p><strong>我们的分工从一开始就很明确：</strong>我做：想方向、定价格、授权发布、确认收钱。AI 做：所有技术活。</p>
+
+<h2>第一天：确定了三条赚钱路线</h2>
+<p>AI 帮我做了市场调研，结论是三个方向可以同时试：<strong>AI 内容工厂</strong>（5 个 Agent 协作写作）、<strong>AI 客服自动化</strong>（三层升级链路）、<strong>AI 数据分析报告</strong>（上传 Excel 自动分析）。</p>
+<p><strong>第一个错误：定价太低。</strong>我一开始定的 ¥200/篇。后来发现——同样的服务，美国市场可以收 $499/月。这是 14 倍的差距。</p>
+
+<h2>第二天上午：搭了整套自动化基础设施</h2>
+<p>AI 帮我部署了落地页、GitHub 仓库、本地服务器（每日 8:30 自动生成内容）、DeepSeek API 接入。</p>
+<p><strong>第二个错误：在 n8n 上浪费了 3 个小时。</strong>AI 写了 5 个完美的工作流，但我根本找不到激活开关。最后放弃 n8n，用 50 行 Node.js 脚本替代——功能一样，零成本。</p>
+<p><strong>教训：SaaS 工具如果激活功能需要的点击次数超过 2 次，它就不适合非技术用户。</strong></p>
+
+<h2>第二天下午：试图推广，被现实打脸</h2>
+<ul>
+<li><strong>HN：</strong>新账号 Show HN 被限、普通链接被 rate-limit、AI 自动化反复失败。</li>
+<li><strong>Reddit：</strong>r/selfhosted 被删、r/aiagents 被拒（新号不能发产品链接）。</li>
+<li><strong>Product Hunt：</strong>排期后 24 小时检查——产品在搜索中完全找不到。同名产品占了位置。</li>
+</ul>
+<p><strong>教训：新号在主流平台上全部受限。手动操作 2 分钟的事，AI 自动化搞了 2 小时还没搞定。</strong></p>
+
+<h2>真正有效的事</h2>
+<ol>
+<li><strong>Dev.to 文章进入 Google 搜索。</strong>发了两篇英文文章，几小时内就被检索。没有 SEO，没有外链。</li>
+<li><strong>把落地页从中文切换到英文。</strong>同样的服务，¥200 vs $499/mo，14 倍差距。这不是技术问题——是叙事问题。</li>
+<li><strong>放弃 n8n，用 50 行代码替代。</strong>最简单的方案就是最好的方案。</li>
+<li><strong>视频内容蒸馏管道。</strong>视频 → Whisper 转录 → DeepSeek 分析 → Obsidian。全自动，$0.002/次。</li>
+</ol>
+
+<h2>真实数字（48 小时后）</h2>
+<table>
+<tr><td>部署的网站</td><td>3 个</td></tr>
+<tr><td>生成的营销内容</td><td>17 条</td></tr>
+<tr><td>Dev.to 文章</td><td>2 篇（Google 可搜）</td></tr>
+<tr><td>HN/Reddit/PH 发帖</td><td>全部失败或受限</td></tr>
+<tr><td>实际付费客户</td><td>0</td></tr>
+<tr><td>月度运营成本</td><td>$0.50</td></tr>
+<tr><td>我写的代码行数</td><td>0</td></tr>
+<tr><td>AI 写的代码行数</td><td>~5000+</td></tr>
+</table>
+
+<h2>10 个真实教训</h2>
+<ol>
+<li><strong>定价锚点决定一切。</strong> ¥200 vs $499，同样的东西，不同的叙事。</li>
+<li><strong>先验证有人愿意付钱，再建产品。</strong></li>
+<li><strong>名字很重要。</strong> 'AMA' 太常见。</li>
+<li><strong>新号在主流平台上全部受限。</strong> 不是产品问题——是平台规则。</li>
+<li><strong>内容比广告有效。</strong> Dev.to 被 Google 检索，比任何推广帖持久。</li>
+<li><strong>自动化不值得。</strong> 手动 2 分钟的事，AI 搞了 2 小时。</li>
+<li><strong>AI 能做的：</strong>写代码、部署、生成内容、分析数据。</li>
+<li><strong>AI 不能做的：</strong>点击网页按钮、理解平台规则、替你收款。</li>
+<li><strong>最佳协作模式：</strong>我做决策和授权，AI 做所有执行。</li>
+<li><strong>AI 基础设施几乎免费。</strong> 真正贵的是时间——在 n8n 和 HN 上浪费的时间，比所有 API 费用加起来都贵 100 倍。</li>
+</ol>
+
+<div class="footer">
+  <p>GitHub: <a href="https://github.com/xzwyjia-pixel/ama">github.com/xzwyjia-pixel/ama</a></p>
+  <p>落地页: <a href="https://agent-business-xi.vercel.app">agent-business-xi.vercel.app</a></p>
+</div>
+</body>
+</html>
