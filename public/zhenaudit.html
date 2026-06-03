@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZhenAudit 甄查 — Minimalist Precision</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0d1117;
+            color: #c9d1d9;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+        }
+
+        /* ── Header ── */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        .brand h2 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            letter-spacing: 0.03em;
+            color: #f0f6fc;
+        }
+        .badge {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 3px;
+            background: #1f2a1f;
+            color: #3fb950;
+            border: 1px solid #238636;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        /* ── Textarea ── */
+        textarea {
+            width: 100%;
+            height: 160px;
+            background: #161b22;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 14px 16px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        textarea:focus {
+            border-color: #238636;
+            box-shadow: 0 0 0 3px rgba(35, 134, 54, 0.15);
+        }
+        textarea::placeholder {
+            color: #484f58;
+        }
+
+        /* ── Controls Row ── */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 18px 0;
+            flex-wrap: wrap;
+        }
+        .slider-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .slider-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: #8b949e;
+            margin-bottom: 6px;
+            letter-spacing: 0.04em;
+        }
+        .slider-group .level-label {
+            color: #e6edf3;
+            font-weight: 600;
+        }
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #30363d;
+            border-radius: 2px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #238636;
+            cursor: pointer;
+            border: 2px solid #0d1117;
+        }
+
+        /* ── User ID ── */
+        .user-field {
+            min-width: 160px;
+        }
+        .user-field label {
+            display: block;
+            font-size: 0.75rem;
+            color: #8b949e;
+            margin-bottom: 6px;
+            letter-spacing: 0.04em;
+        }
+        .user-field input {
+            width: 100%;
+            background: #161b22;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .user-field input:focus {
+            border-color: #238636;
+        }
+
+        /* ── Button ── */
+        button {
+            background: #238636;
+            color: #fff;
+            border: 1px solid #2ea44f;
+            padding: 10px 28px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: 0.85rem;
+            letter-spacing: 0.04em;
+            border-radius: 6px;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        button:hover { background: #2ea44f; }
+        button:active { background: #1a6e2a; }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        button.loading { position: relative; color: transparent; }
+        button.loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Result ── */
+        .result-box {
+            margin-top: 24px;
+            padding: 18px 20px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+        .result-box.visible { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .result-box .verdict-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 3px;
+            margin-bottom: 14px;
+            letter-spacing: 0.06em;
+        }
+        .verdict-tag.violation { background: #3d1f1f; color: #f85149; border: 1px solid #f85149; }
+        .verdict-tag.clean      { background: #1f2a1f; color: #3fb950; border: 1px solid #238636; }
+        .verdict-tag.review     { background: #2a2410; color: #d29922; border: 1px solid #9e6a03; }
+
+        .result-box .meta {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+            font-size: 0.72rem;
+            color: #8b949e;
+        }
+        .result-box .meta span { white-space: nowrap; }
+        .result-box .reason {
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: #adbac7;
+            padding-top: 12px;
+            border-top: 1px solid #21262d;
+        }
+        .result-box .error-msg {
+            color: #f85149;
+            font-size: 0.82rem;
+        }
+
+        /* ── Quota Bar ── */
+        .quota-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 5px;
+            font-size: 0.73rem;
+            color: #8b949e;
+            margin-bottom: 14px;
+            transition: all 0.2s;
+        }
+        .quota-bar.low {
+            border-color: #d29922;
+            background: #1a1810;
+            color: #d29922;
+        }
+        .quota-bar.empty {
+            border-color: #f85149;
+            background: #1a1010;
+            color: #f85149;
+        }
+        .quota-icon { font-size: 1rem; }
+
+        /* ── Pricing Card (402) ── */
+        .pricing-cards {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+        .pricing-card {
+            flex: 1;
+            min-width: 120px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            padding: 12px;
+            text-align: center;
+            transition: border-color 0.15s;
+        }
+        .pricing-card:hover { border-color: #58a6ff; }
+        .pricing-card .plan-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #e6edf3;
+            margin-bottom: 4px;
+        }
+        .pricing-card .plan-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #3fb950;
+        }
+        .pricing-card .plan-detail {
+            font-size: 0.65rem;
+            color: #8b949e;
+            margin-top: 4px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.68rem;
+            color: #484f58;
+            letter-spacing: 0.03em;
+        }
+        .footer a { color: #8b949e; text-decoration: none; }
+        .footer a:hover { color: #c9d1d9; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Brand -->
+    <div class="brand">
+        <h2>⚡ ZhenAudit (甄查) · 极速合规审查</h2>
+        <span class="badge">Beta</span>
+    </div>
+
+    <!-- Input -->
+    <textarea
+        id="textInput"
+        placeholder="请粘贴直播间话术或电商文案…
+例如: &quot;家人们！这款精华我们实验室实测淡斑效果提升 87%，今天限时破价…&quot;"
+    ></textarea>
+
+    <!-- Controls -->
+    <div class="controls">
+        <div class="slider-group">
+            <label>
+                敏感度:
+                <span class="level-label" id="lvlLabel">STANDARD (2)</span>
+            </label>
+            <input
+                type="range"
+                id="sensitivity"
+                min="1"
+                max="3"
+                value="2"
+                oninput="updateLevelLabel(this.value)"
+            >
+        </div>
+        <div class="user-field">
+            <label>用户 ID</label>
+            <input
+                type="text"
+                id="userId"
+                placeholder="demo@zhenaudit.io"
+                value="demo@zhenaudit.io"
+            >
+        </div>
+    </div>
+
+    <!-- Quota Indicator -->
+    <div id="quotaBar" class="quota-bar">
+        <span class="quota-icon">🔋</span>
+        <span id="quotaLabel">加载中…</span>
+    </div>
+
+    <!-- Action -->
+    <button id="auditBtn" onclick="triggerAudit()">▶ 开始甄查</button>
+
+    <!-- Result -->
+    <div id="result" class="result-box"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Powered by <a href="/">RuleGuard Pro</a> · AMA Debate Protocol v2.0 · Token 计费透明
+    </div>
+</div>
+
+<!-- ──────────────────────────────────── -->
+<!-- Script                              -->
+<!-- ──────────────────────────────────── -->
+<script>
+const API_BASE = window.location.origin;
+const LEVELS = { 1: 'LENIENT', 2: 'STANDARD', 3: 'STRICT' };
+const TAG_CLASS = {
+    violation: 'violation',
+    clean: 'clean',
+    review: 'review',
+};
+
+/* ── Init: fetch quota on page load ── */
+(async function init() {
+    updateLevelLabel(2);
+    await fetchQuota();
+})();
+
+/* ── Slider label sync ── */
+function updateLevelLabel(val) {
+    const el = document.getElementById('lvlLabel');
+    el.textContent = LEVELS[val] + ' (' + val + ')';
+}
+
+/* ── Fetch and render quota bar ── */
+async function fetchQuota() {
+    const bar = document.getElementById('quotaBar');
+    const label = document.getElementById('quotaLabel');
+    try {
+        const resp = await fetch(API_BASE + '/v1/quota', { credentials: 'include' });
+        const json = await resp.json();
+        const q = json.quota || {};
+        const remaining = q.effective_remaining ?? q.ip_remaining ?? 0;
+        const limit = q.daily_limit || 3;
+
+        label.textContent = `免费额度: ${remaining}/${limit} 次 (今日剩余)`;
+
+        bar.classList.remove('low', 'empty');
+        if (remaining === 0) {
+            bar.classList.add('empty');
+        } else if (remaining === 1) {
+            bar.classList.add('low');
+        }
+    } catch {
+        label.textContent = '离线模式 — 无法获取额度';
+    }
+}
+
+/* ── Main audit trigger ── */
+async function triggerAudit() {
+    const textarea = document.getElementById('textInput');
+    const btn      = document.getElementById('auditBtn');
+    const resultEl = document.getElementById('result');
+    const text     = textarea.value.trim();
+    const sensitivity = parseInt(document.getElementById('sensitivity').value);
+    const userId   = document.getElementById('userId').value.trim() || 'anonymous';
+
+    // ── Validate ──
+    if (!text) {
+        textarea.style.borderColor = '#f85149';
+        textarea.focus();
+        setTimeout(() => { textarea.style.borderColor = ''; }, 1500);
+        return;
+    }
+
+    // ── Loading state ──
+    btn.disabled = true;
+    btn.classList.add('loading');
+    btn.textContent = '甄查中…';
+    resultEl.classList.remove('visible');
+    resultEl.innerHTML = '';
+
+    try {
+        const resp = await fetch(API_BASE + '/v1/audit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                text: text,
+                sensitivity: sensitivity,
+                user_id: userId,
+            }),
+        });
+
+        const json = await resp.json();
+
+        if (!resp.ok) {
+            if (resp.status === 402) {
+                resultEl.innerHTML = renderQuotaExhausted(json);
+            } else {
+                resultEl.innerHTML = renderError(json.detail || '未知错误');
+            }
+            resultEl.classList.add('visible');
+            return;
+        }
+
+        resultEl.innerHTML = renderResult(json);
+        resultEl.classList.add('visible');
+
+        // Refresh quota bar after successful audit
+        await fetchQuota();
+
+    } catch (err) {
+        resultEl.innerHTML = renderError('网络异常或 API 未启动 — 请检查 uvicorn 是否在 8000 端口运行');
+        resultEl.classList.add('visible');
+    } finally {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        btn.textContent = '▶ 开始甄查';
+    }
+}
+
+/* ── Result renderers ── */
+function renderResult(json) {
+    const data  = json.data || {};
+    const cost  = json.cost || {};
+    const quota = json.quota || {};
+    const verdict = data.verdict || {};
+
+    // Derive tag from verdict
+    const isViolation = verdict.is_violation ?? (verdict.risk_level === 'HIGH' || verdict.risk_level === 'MEDIUM');
+    let tagType = 'clean';
+    let tagText = '✅ 合规通过';
+    if (isViolation) {
+        tagType = 'violation';
+        tagText = '🚫 检测到违规风险';
+    } else if (verdict.risk_level === 'REVIEW' || verdict.risk_level === 'MEDIUM') {
+        tagType = 'review';
+        tagText = '⚠️ 建议人工复核';
+    }
+
+    const riskLevel = verdict.risk_level || '—';
+    const reason    = verdict.reason || verdict.summary || JSON.stringify(verdict, null, 2);
+    const qRemaining = quota.effective_remaining ?? '—';
+
+    return `
+        <div class="verdict-tag ${TAG_CLASS[tagType] || 'clean'}">${tagText}</div>
+        <div class="meta">
+            <span>📊 风险等级: <b>${escapeHtml(String(riskLevel))}</b></span>
+            <span>🎯 敏感度: ${escapeHtml(data.sensitivity || 'STANDARD')}</span>
+            <span>📁 领域: ${escapeHtml(data.domain || '—')}</span>
+            <span>🔑 会话: <code style="color:#8b949e">${escapeHtml((json.session_id || '').slice(0, 16))}…</code></span>
+        </div>
+        <div class="meta" style="margin-bottom:0;border-top:1px solid #21262d;padding-top:12px;">
+            <span>🪙 Tokens: ${cost.tokens?.toLocaleString() || '—'}</span>
+            <span>💰 ¥${cost.cost_yuan || '—'}</span>
+            <span>⏱ ${cost.duration_seconds || '—'}s</span>
+            <span>🔋 剩余: ${qRemaining} 次</span>
+        </div>
+        <div class="reason">${escapeHtml(reason)}</div>
+    `;
+}
+
+function renderError(msg) {
+    return `<div class="error-msg">❌ ${escapeHtml(msg)}</div>`;
+}
+
+function renderQuotaExhausted(json) {
+    const pricing = json.pricing || {};
+    const plans = pricing.plans || [];
+    const quota = json.quota || {};
+
+    let cardsHtml = '';
+    if (plans.length) {
+        cardsHtml = '<div class="pricing-cards">' +
+            plans.map(p => `
+                <div class="pricing-card">
+                    <div class="plan-name">${escapeHtml(p.name)}</div>
+                    <div class="plan-price">¥${p.price_cny}<span style="font-size:0.65rem;color:#8b949e">/月</span></div>
+                    <div class="plan-detail">${p.audits_per_month === -1 ? '无限审查' : p.audits_per_month + '次/月'}</div>
+                    <div class="plan-detail">${p.overage_cny ? '超额 ¥' + p.overage_cny + '/次' : '含超额'}</div>
+                </div>
+            `).join('') +
+            '</div>';
+    }
+
+    return `
+        <div class="verdict-tag review">💳 免费额度已用完</div>
+        <div class="meta">
+            <span>📅 每日限额: ${quota.daily_limit || 3} 次</span>
+            <span>🔋 IP 剩余: ${quota.ip_remaining ?? 0} 次</span>
+            <span>🍪 Cookie 剩余: ${quota.cookie_remaining ?? 0} 次</span>
+        </div>
+        <div class="reason" style="color:#d29922;border-top:1px solid #21262d;padding-top:12px;">
+            ${escapeHtml(json.detail || '免费额度已用完，请订阅方案解锁无限审查')}
+        </div>
+        ${cardsHtml}
+        <div style="margin-top:12px;font-size:0.72rem;color:#8b949e;">
+            📧 企业方案: ${escapeHtml(pricing.contact || 'sales@zhenaudit.io')}
+            &nbsp;·&nbsp;
+            <a href="${escapeHtml(pricing.upgrade_url || '/pricing')}" style="color:#58a6ff;">查看完整方案 →</a>
+        </div>
+    `;
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+/* ── Hotkey: Ctrl+Enter to submit ── */
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        triggerAudit();
+    }
+});
+</script>
+
+</body>
+</html>

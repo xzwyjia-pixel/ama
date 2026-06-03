@@ -11,6 +11,7 @@
     { "src": "/enterprise", "dest": "/enterprise.html" },
     { "src": "/shield", "dest": "/shield.html" },
     { "src": "/desktop", "dest": "/desktop.html" },
+    { "src": "/zhenaudit", "dest": "/zhenaudit.html" },
     { "src": "/fleet", "dest": "/fleet.html" },
     { "src": "/guard", "dest": "/guard.html" },
     { "src": "/calculator", "dest": "/index.html" },
