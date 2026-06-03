@@ -10,9 +10,21 @@
 
 AMA discovers, routes, and secures every AI agent across **Claude Code, Pi Agent, Codex CLI, and any MCP server** — from a single terminal.
 
+## Demo
+
+[▶ Watch the demo](https://ama-agent-store.vercel.app/ama-demo.webm)
+
+<video src="https://ama-agent-store.vercel.app/ama-demo.webm" width="640" controls></video>
+
+*18 seconds: terminal scan → 457 agents discovered → dashboard*
+
 ```bash
 pip install ama-core && ama scan && ama start
 ```
+
+## Real Story
+
+[I don't know how to code — but I built a SaaS business in 48 hours with AI](https://ama-agent-store.vercel.app/real-story.html)
 
 ---
 
