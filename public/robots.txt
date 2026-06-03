@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Sitemap: https://ama-agent-store.vercel.app/sitemap.xml
+
+# Priority pages for crawling
+Allow: /store
+Allow: /enterprise
+Allow: /ama-thesis.html
+Allow: /ama-architecture.excalidraw
