@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI创业避坑指南 — 48小时真实记录</title>
+<meta name="description" content="一个不会写代码的人，用AI在48小时内搭建SaaS的真实避坑记录。10条用时间和挫折换来的教训。">
+<style>
+body { font-family:Georgia,serif; max-width:720px; margin:0 auto; padding:40px 24px; background:#fafafa; color:#1a1a1a; line-height:1.9; }
+h1 { font-size:2em; font-weight:800; } h2 { margin-top:40px; }
+blockquote { border-left:3px solid #6366f1; padding-left:16px; color:#555; margin:20px 0; }
+table { border-collapse:collapse; width:100%; margin:20px 0; }
+td,th { border:1px solid #ddd; padding:10px 14px; font-size:0.95em; }
+th { background:#f5f5f5; }
+ol li { margin-bottom:16px; }
+.mistake { background:#fff3cd; border-left:4px solid #f59e0b; padding:12px 16px; margin:16px 0; }
+.win { background:#d4edda; border-left:4px solid #10b981; padding:12px 16px; margin:16px 0; }
+code { background:#eee; padding:2px 6px; border-radius:4px; }
+.footer { margin-top:60px; padding-top:20px; border-top:1px solid #ddd; font-size:0.85em; color:#888; }
+</style>
+</head>
+<body>
+
+<h1>🕳️ AI创业避坑指南</h1>
+<p><strong>48小时。0行代码。AI写了5000+行。$0.50成本。0个付费客户。10条血泪教训。</strong></p>
+<p>作者: xzwyjia · 2026-06-03</p>
+
+<h2>十条避坑法则</h2>
+
+<div class="mistake"><strong>🥇 坑1: AI自动化不如手动快</strong><br>让AI用Playwright自动发帖到HN——搞了2小时，全部失败。手动复制粘贴: 2分钟。AI不是万能的，有些事人做更快。</div>
+
+<div class="mistake"><strong>🥈 坑2: 定价锚点决定一切</strong><br>一开始定¥200/篇。看了硅谷创业者视频才意识到——美国市场$499/月。同样的服务，14倍差距。</div>
+
+<div class="mistake"><strong>🥉 坑3: 新号在主流平台全部受限</strong><br>HN Show HN被限、Reddit被删、Product Hunt被淹没、Twitter被锁。不是产品问题——是平台规则。</div>
+
+<ol start="4">
+<li><strong>名字很重要</strong> — 'AMA'太常见，被同名产品占据了Product Hunt搜索。</li>
+<li><strong>Dev.to文章被Google检索</strong> — 比在5个社交平台发广告都持久。写真实内容。</li>
+<li><strong>SaaS工具激活需>2次点击就不适合非技术用户</strong> — n8n让我浪费了3小时。</li>
+<li><strong>API key不能硬编码</strong> — 写入文件会触发AI安全封锁。</li>
+<li><strong>产品定位比功能重要</strong> — "代写工具" vs "一人公司操作系统" — 同样的东西，不同的叙事。</li>
+<li><strong>本地脚本比SaaS可靠</strong> — 50行Node.js替代了n8n，成本$0。</li>
+<li><strong>AI基础设施几乎免费</strong> — DeepSeek $0.002/次。真正贵的是被浪费的时间。</li>
+</ol>
+
+<h2>全平台状态</h2>
+<table>
+<tr><th>平台</th><th>状态</th><th>效果</th></tr>
+<tr><td>Dev.to</td><td>3篇文章</td><td>✅ Google可搜</td></tr>
+<tr><td>GitHub</td><td>MIT开源</td><td>✅ 在线</td></tr>
+<tr><td>Stripe</td><td>已接入</td><td>✅ $499/$799/$299</td></tr>
+<tr><td>Product Hunt</td><td>被淹没</td><td>🔴 同名产品占位</td></tr>
+<tr><td>HN</td><td>被限</td><td>🟡 等冷却</td></tr>
+<tr><td>Reddit</td><td>2帖全删</td><td>🔴 新号封杀</td></tr>
+</table>
+
+<h2>竞品速览</h2>
+<table>
+<tr><th>竞品</th><th>特点</th><th>威胁</th></tr>
+<tr><td>Mission Control</td><td>MIT开源, 32面板SPA</td><td>🔴 高</td></tr>
+<tr><td>AirisOS</td><td>"OS for AI agents"</td><td>🟡 中</td></tr>
+<tr><td>VNX</td><td>CLI优先, Merkle审计</td><td>🟡 中</td></tr>
+<tr><td>Microsoft AGT</td><td>企业市场</td><td>🟢 低</td></tr>
+</table>
+
+<div class="footer">
+<p>全报告: <a href="https://github.com/xzwyjia-pixel/ama">github.com/xzwyjia-pixel/ama</a></p>
+<p>落地页: <a href="https://agent-business-xi.vercel.app">agent-business-xi.vercel.app</a></p>
+</div>
+</body>
+</html>
