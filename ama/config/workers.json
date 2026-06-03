@@ -1,0 +1,96 @@
+{
+  "workers": {
+    "content": {
+      "enabled": true,
+      "class": "workers.content.ContentWorker",
+      "description": "内容创作Worker — 写作、翻译、摘要、社交媒体",
+      "supported_task_types": ["writing", "translation", "summary", "social_media"],
+      "default_model": "deepseek/flash",
+      "fallback_model": "ollama/qwen2.5:14b",
+      "max_retries": 3,
+      "timeout_seconds": 120,
+      "capability": {
+        "creativity": 8,
+        "accuracy": 6,
+        "speed": 7
+      }
+    },
+    "code": {
+      "enabled": true,
+      "class": "workers.code.CodeWorker",
+      "description": "代码开发Worker — 编码、调试、测试、部署",
+      "supported_task_types": ["coding", "debugging", "testing", "deployment"],
+      "default_model": "deepseek/pro-1m",
+      "fallback_model": "deepseek/flash",
+      "max_retries": 2,
+      "timeout_seconds": 300,
+      "capability": {
+        "creativity": 5,
+        "accuracy": 9,
+        "speed": 4
+      }
+    },
+    "trading": {
+      "enabled": true,
+      "class": "workers.trading.TradingWorker",
+      "description": "金融交易Worker — 市场分析、交易信号、风险评估",
+      "supported_task_types": ["market_analysis", "trading_signal", "risk_assessment"],
+      "default_model": "deepseek/pro-1m",
+      "fallback_model": "deepseek/flash",
+      "max_retries": 2,
+      "timeout_seconds": 600,
+      "capability": {
+        "creativity": 4,
+        "accuracy": 10,
+        "speed": 3
+      }
+    },
+    "data": {
+      "enabled": true,
+      "class": "workers.data.DataWorker",
+      "description": "数据分析Worker — 爬取、清洗、分析、报告",
+      "supported_task_types": ["scraping", "cleaning", "analysis", "reporting"],
+      "default_model": "deepseek/flash",
+      "fallback_model": "ollama/qwen2.5:14b",
+      "max_retries": 3,
+      "timeout_seconds": 180,
+      "capability": {
+        "creativity": 4,
+        "accuracy": 8,
+        "speed": 5
+      }
+    },
+    "media": {
+      "enabled": false,
+      "class": "workers.media.MediaWorker",
+      "description": "媒体生成Worker — 图像、视频、音频生成",
+      "supported_task_types": ["image_gen", "video_gen", "audio_gen"],
+      "default_model": "comfyui/local",
+      "fallback_model": null,
+      "max_retries": 1,
+      "timeout_seconds": 600,
+      "capability": {
+        "creativity": 10,
+        "accuracy": 5,
+        "speed": 2
+      },
+      "_comment": "默认禁用，需要ComfyUI运行"
+    },
+    "commerce": {
+      "enabled": false,
+      "class": "workers.commerce.CommerceWorker",
+      "description": "商务Worker — 客服、上架、定价、订单处理",
+      "supported_task_types": ["customer_service", "listing", "pricing", "order"],
+      "default_model": "deepseek/flash",
+      "fallback_model": "ollama/qwen2.5:14b",
+      "max_retries": 2,
+      "timeout_seconds": 120,
+      "capability": {
+        "creativity": 5,
+        "accuracy": 7,
+        "speed": 8
+      },
+      "_comment": "待平台API接入后启用"
+    }
+  }
+}

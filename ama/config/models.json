@@ -1,0 +1,71 @@
+{
+  "default": "deepseek/flash",
+  "models": {
+    "ollama/qwen2.5:14b": {
+      "provider": "ollama",
+      "model_name": "qwen2.5:14b",
+      "api_base": "http://localhost:11434/v1",
+      "api_key_ref": "ollama",
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "capability_score": 3,
+      "supports_tools": false,
+      "supports_images": false,
+      "pricing": { "input_per_1k": 0.0, "output_per_1k": 0.0 },
+      "type": "local",
+      "timeout_seconds": 120,
+      "weight": 1
+    },
+    "deepseek/flash": {
+      "provider": "deepseek",
+      "model_name": "deepseek-v4-flash",
+      "api_base": "https://api.deepseek.com",
+      "api_key_ref": "deepseek",
+      "context_window": 65536,
+      "max_output_tokens": 8192,
+      "capability_score": 6,
+      "supports_tools": true,
+      "supports_images": false,
+      "pricing": { "input_per_1k": 0.001, "output_per_1k": 0.002 },
+      "type": "cloud",
+      "timeout_seconds": 60,
+      "weight": 10
+    },
+    "deepseek/pro-1m": {
+      "provider": "deepseek",
+      "model_name": "deepseek-v4-pro",
+      "api_base": "https://api.deepseek.com/anthropic",
+      "api_key_ref": "deepseek",
+      "context_window": 1048576,
+      "max_output_tokens": 16384,
+      "capability_score": 10,
+      "supports_tools": true,
+      "supports_images": true,
+      "pricing": { "input_per_1k": 0.01, "output_per_1k": 0.02 },
+      "type": "cloud",
+      "timeout_seconds": 120,
+      "weight": 100
+    },
+    "comfyui/local": {
+      "provider": "comfyui",
+      "model_name": "comfyui-local",
+      "api_base": "http://127.0.0.1:8188",
+      "api_key_ref": null,
+      "context_window": 0,
+      "max_output_tokens": 0,
+      "capability_score": 8,
+      "supports_tools": false,
+      "supports_images": true,
+      "pricing": { "per_image": 0.0 },
+      "type": "local",
+      "timeout_seconds": 300,
+      "weight": 0
+    }
+  },
+  "fallback_chain": ["deepseek/pro-1m", "deepseek/flash", "ollama/qwen2.5:14b"],
+  "complexity_thresholds": {
+    "simple_max": 3,
+    "medium_max": 6,
+    "complex_min": 7
+  }
+}

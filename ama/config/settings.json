@@ -1,0 +1,42 @@
+{
+  "ama_version": "0.1.0",
+  "project_root": "c:/Users/25454/业务中控台/ama",
+  "database": {
+    "path": "c:/Users/25454/业务中控台/ama/data/ama.db",
+    "backup_interval_hours": 24
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "c:/Users/25454/业务中控台/ama/logs/ama.log",
+    "max_size_mb": 100,
+    "backup_count": 5
+  },
+  "manager": {
+    "max_concurrent_tasks": 5,
+    "default_timeout_seconds": 300,
+    "max_retries_per_task": 3,
+    "task_queue_max_size": 100,
+    "review_required": true,
+    "review_confidence_threshold": 0.7
+  },
+  "cost_control": {
+    "daily_budget_yuan": 50.0,
+    "per_task_budget_yuan": 5.0,
+    "alert_threshold_yuan": 30.0,
+    "auto_downgrade_on_budget": true
+  },
+  "memory": {
+    "obsidian_vault_path": "D:/01_Documents",
+    "obsidian_enabled": false,
+    "sqlite_enabled": true
+  },
+  "mcp": {
+    "platform_bridge_enabled": false,
+    "platform_bridge_path": "C:/Users/25454/.claude/mcp-bridge/mcp_server.py"
+  },
+  "workers": {
+    "config_path": "c:/Users/25454/业务中控台/ama/config/workers.json",
+    "models_path": "c:/Users/25454/业务中控台/ama/config/models.json",
+    "auto_discover": true
+  }
+}

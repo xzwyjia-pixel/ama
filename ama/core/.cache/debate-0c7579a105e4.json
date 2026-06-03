@@ -1,0 +1,152 @@
+{
+  "session_id": "debate-0c7579a105e4",
+  "topic": "直播间 895182356725 话术合规审查: 🔥美白专场 全场5折 最后3小时!",
+  "domain": "douyin_compliance",
+  "external_data": {
+    "douyin_live_data": {
+      "room_id": "895182356725",
+      "anchor_name": "美妆达人小李",
+      "live_title": "🔥美白专场 全场5折 最后3小时!",
+      "transcript": "家人们! 这款美白霜, 只要你坚持用7天, 我保证你白一个度! 我自己用了3天就明显白了, 你们看我的脸! 别的品牌都不敢说, 但我敢说: 这个是市面上效果最好的! 今天不买真的会后悔, 因为明天就恢复原价了! 全网最低价, 绝对找不到比我家更便宜的! 马上拍, 库存只剩最后50单, 卖完就没有了!",
+      "products": [
+        {
+          "name": "焕白亮肤霜",
+          "price": 99.0,
+          "original_price": 199.0,
+          "claims": [
+            "7天美白",
+            "3天见效",
+            "市面上效果最好",
+            "全网最低价",
+            "库存告急"
+          ]
+        }
+      ],
+      "live_stats": {
+        "viewers": 3200,
+        "duration_minutes": 45,
+        "gmv_estimated": 28000
+      },
+      "platform": "douyin",
+      "captured_at": "2026-06-02T15:44:55.013805+00:00"
+    },
+    "rule_context": "\n## 抖音直播合规规则摘要 (2026-06 生效)\n1. 禁止使用绝对化用语: \"最好\"、\"第一\"、\"绝对\"、\"全网最低\"等\n2. 禁止对化妆品/护肤品使用效果承诺: \"7天见效\"、\"3天白一度\"等时间量化的功效宣称\n3. 禁止虚假限时限量: \"最后50单\"必须有真实库存依据\n4. 禁止虚假原价: 划线价必须是近30天内有实际成交的价格\n5. 必须标注广告标识: 带货内容需在显著位置标注\"广告\"\n"
+  },
+  "round_1": [
+    {
+      "agent_id": "Agent_A",
+      "agent_role": "合规风控审计",
+      "round_num": 1,
+      "content": "",
+      "token_cost": {
+        "tokens_input": 825,
+        "tokens_output": 1625,
+        "cost_yuan": 0.04075,
+        "cost_usd": 0.00566,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 34575
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    },
+    {
+      "agent_id": "Agent_B",
+      "agent_role": "静奢文案转化",
+      "round_num": 1,
+      "content": "",
+      "token_cost": {
+        "tokens_input": 810,
+        "tokens_output": 1786,
+        "cost_yuan": 0.04382,
+        "cost_usd": 0.006086,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 45657
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    },
+    {
+      "agent_id": "Agent_C",
+      "agent_role": "逻辑对抗检视",
+      "round_num": 1,
+      "content": "",
+      "token_cost": {
+        "tokens_input": 839,
+        "tokens_output": 3485,
+        "cost_yuan": 0.07809,
+        "cost_usd": 0.010846,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 99033
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    }
+  ],
+  "round_2": [
+    {
+      "agent_id": "Agent_A",
+      "agent_role": "合规风控审计",
+      "round_num": 2,
+      "content": "",
+      "token_cost": {
+        "tokens_input": 951,
+        "tokens_output": 1155,
+        "cost_yuan": 0.03261,
+        "cost_usd": 0.004529,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 30172
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    },
+    {
+      "agent_id": "Agent_B",
+      "agent_role": "静奢文案转化",
+      "round_num": 2,
+      "content": "",
+      "token_cost": {
+        "tokens_input": 935,
+        "tokens_output": 1737,
+        "cost_yuan": 0.04409,
+        "cost_usd": 0.006124,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 45433
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    },
+    {
+      "agent_id": "Agent_C",
+      "agent_role": "逻辑对抗检视",
+      "round_num": 2,
+      "content": "",
+      "token_cost": {
+        "tokens_input": 967,
+        "tokens_output": 3439,
+        "cost_yuan": 0.07845,
+        "cost_usd": 0.010896,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 91606
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    }
+  ],
+  "referee_verdict": null,
+  "cumulative_cost": {
+    "tokens_input": 6488,
+    "tokens_output": 15952,
+    "cost_yuan": 0.38392,
+    "cost_usd": 0.053322,
+    "duration_ms": 403335
+  },
+  "duration_seconds": 247.98,
+  "started_at": "2026-06-02T15:44:55.031024+00:00",
+  "completed_at": "2026-06-02T15:49:03.008907+00:00"
+}

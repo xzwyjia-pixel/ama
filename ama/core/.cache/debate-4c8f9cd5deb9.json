@@ -1,0 +1,123 @@
+{
+  "session_id": "debate-4c8f9cd5deb9",
+  "topic": "test",
+  "domain": "general_business",
+  "external_data": null,
+  "round_1": [
+    {
+      "agent_id": "Agent_A",
+      "agent_role": "合规风控审计",
+      "round_num": 1,
+      "content": "辩论内容...",
+      "token_cost": {
+        "tokens_input": 100,
+        "tokens_output": 200,
+        "cost_yuan": 0.005,
+        "cost_usd": 0.000694,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 0
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    },
+    {
+      "agent_id": "Agent_B",
+      "agent_role": "静奢文案转化",
+      "round_num": 1,
+      "content": "辩论内容...",
+      "token_cost": {
+        "tokens_input": 100,
+        "tokens_output": 200,
+        "cost_yuan": 0.005,
+        "cost_usd": 0.000694,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 0
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    },
+    {
+      "agent_id": "Agent_C",
+      "agent_role": "逻辑对抗检视",
+      "round_num": 1,
+      "content": "辩论内容...",
+      "token_cost": {
+        "tokens_input": 100,
+        "tokens_output": 200,
+        "cost_yuan": 0.005,
+        "cost_usd": 0.000694,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 0
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    }
+  ],
+  "round_2": [
+    {
+      "agent_id": "Agent_A",
+      "agent_role": "合规风控审计",
+      "round_num": 2,
+      "content": "辩论内容...",
+      "token_cost": {
+        "tokens_input": 100,
+        "tokens_output": 200,
+        "cost_yuan": 0.005,
+        "cost_usd": 0.000694,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 0
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    },
+    {
+      "agent_id": "Agent_B",
+      "agent_role": "静奢文案转化",
+      "round_num": 2,
+      "content": "辩论内容...",
+      "token_cost": {
+        "tokens_input": 100,
+        "tokens_output": 200,
+        "cost_yuan": 0.005,
+        "cost_usd": 0.000694,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 0
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    },
+    {
+      "agent_id": "Agent_C",
+      "agent_role": "逻辑对抗检视",
+      "round_num": 2,
+      "content": "辩论内容...",
+      "token_cost": {
+        "tokens_input": 100,
+        "tokens_output": 200,
+        "cost_yuan": 0.005,
+        "cost_usd": 0.000694,
+        "model": "deepseek-v4-pro",
+        "duration_ms": 0
+      },
+      "metadata": {
+        "model_used": "deepseek-v4-pro"
+      }
+    }
+  ],
+  "referee_verdict": null,
+  "cumulative_cost": {
+    "tokens_input": 1600,
+    "tokens_output": 1800,
+    "cost_yuan": 0.052,
+    "cost_usd": 0.007222,
+    "duration_ms": 0
+  },
+  "duration_seconds": 0.04,
+  "started_at": "2026-06-03T03:42:35.009321+00:00",
+  "completed_at": "2026-06-03T03:42:35.049783+00:00"
+}
